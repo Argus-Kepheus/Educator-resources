@@ -23,11 +23,13 @@ This template was created to automate the repetitive task of formatting exams fo
 ### Basic Setup
 
 1. Edit the metadata section at the beginning of the document:
+```
    \newcommand{\subject}{Your Subject Name}
    \newcommand{\teacher}{Your Name}
    \newcommand{\examdate}{Exam Date}
-
-2. Add your questions using the provided format:
+```
+3. Add your questions using the provided format:
+```
    \Question
    Your question text here?
 
@@ -36,8 +38,8 @@ This template was created to automate the repetitive task of formatting exams fo
    \Alternative{Option C text}{}
    \Alternative{Option D text}{}
    \Alternative{Option E text}{}
-
-3. Switching Between Student and Teacher Versions:
+```
+4. Switching Between Student and Teacher Versions:
    To toggle between versions, modify the \setboolean{showanswers} line:
 
    - Student version (no answers marked):
@@ -48,7 +50,7 @@ This template was created to automate the repetitive task of formatting exams fo
 
    When compiled with `true`, correct answers will be displayed with filled squares (■), while incorrect answers will show empty squares (□).
 
-4. Multilingual Support:
+5. Multilingual Support:
    The template includes basic support for multiple languages via the `babel` package (Portuguese, Spanish, French, Italian, German, English). This feature is a proof of concept and may require additional configuration for production use.
 
    To switch languages:
