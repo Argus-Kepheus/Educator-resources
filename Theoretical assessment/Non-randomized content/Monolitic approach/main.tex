@@ -1,0 +1,567 @@
+\documentclass[11pt]{article}
+% ======================================================= %
+% EXAM METADATA
+% ======================================================= %
+\newcommand{\subject}{Latin multi-lingual assessment template}
+\newcommand{\teacher}{Calvimontes S. C.}
+\newcommand{\examdate}{<test day>}
+\newcommand{\period}{<year>}
+\newcommand{\examversion}{A}
+\newcommand{\examduration}{2 hours}
+% ======================================================= %
+% PACKAGES 
+% ======================================================= %
+% ENCODING AND LANGUAGE PACKAGES
+\usepackage[T1]{fontenc}        % Font encoding
+\usepackage[	portuguese,
+				spanish,
+				french,
+				italian,
+				german,
+				romanian,
+				english]{babel} % Multiple language support
+% MATH PACKAGES
+\usepackage{amsmath}            % Advanced mathematics
+\usepackage{amssymb}            % Mathematical symbols
+% GENERAL PACKAGES
+\usepackage{adjustbox}          % Box adjustment
+\usepackage{csquotes}           % Contextual quotes
+\usepackage{enumitem}           % Customized lists
+\usepackage[
+top			=	1.5cm,
+bottom		=	1.5cm,
+left		=	1cm,
+right		=	1cm,
+headheight	=	2cm,  		% header space
+headsep		=	0.5cm   	% separation between header and text
+]{geometry}
+\usepackage{graphicx}           % Image inclusion
+\usepackage{ifthen}             % Conditional structures
+\usepackage{microtype}          % Typography improvement
+\usepackage{multicol}           % Multiple columns
+\usepackage{ragged2e}           % Text alignment
+\usepackage{tikz}               % Graphics and drawings
+\usepackage{titlesec}           % Title formatting
+\usepackage{xcolor}             % Colors
+% LAYOUT PACKAGES
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+% HYPERLINK PACKAGE (should come last)
+\usepackage{hyperref}           % Links and references
+% ======================================================= %
+% GRADE BOX COMMAND
+% ======================================================= %
+\newcommand{\gradebox}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[anchor=north east, xshift=-1.0cm, yshift=-1.0cm] at (current page.north east) {%
+			\fbox{\parbox[c][2cm][c]{2cm}{\phantom{.}}}%
+		};
+	\end{tikzpicture}%
+}
+% ======================================================= %
+% HEADER AND FOOTER CONFIGURATION
+% ======================================================= %
+\pagestyle{fancy}
+\fancyhf{} % Clear all headers and footers
+% Header configuration
+\fancyhead[L]{\leftmark} % Section name on the left side
+\fancyhead[R]{} % Right side empty (or can add other info)
+% Footer configuration
+\fancyfoot[C]{\thepage\ of \pageref{LastPage}} % Current page of total in center
+% Line configuration
+\renewcommand{\headrulewidth}{0.4pt} % Header line
+\renewcommand{\footrulewidth}{0.4pt} % Footer line
+% ======================================================= %
+% TYPOGRAPHY SETTINGS
+% ======================================================= %
+\tolerance=1000
+\hyphenpenalty=1000
+\emergencystretch=\maxdimen
+% Hyphenation settings
+\lefthyphenmin=2
+\righthyphenmin=3
+% ======================================================= %
+% ANSWER KEY SETTINGS
+% ======================================================= %
+\newboolean{showanswers}
+\setboolean{showanswers}{true} % true for answer key, false for students
+% ======================================================= %
+% HYPERREF SETTINGS
+% ======================================================= %
+\hypersetup{
+	colorlinks		=	false,
+	pdfborder		=	{0 0 0},
+	pdftitle		=	{\subject - Exam},
+	pdfsubject		=	{Assessment},
+	pdfkeywords		=	{exam, \subject}
+}
+% ======================================================= %
+% IMAGE WITH FALLBACK COMMAND
+% ======================================================= %
+\newcommand{\imagewithfallback}[3][]{%
+	\IfFileExists{figures/#2}{%
+		\includegraphics[#1]{figures/#2}%
+	}{%
+		\fbox{%
+			\parbox{0.4\textwidth}{%
+				\centering%
+				\textcolor{red}{\textbf{IMAGE NOT FOUND}}\\[0.5em]%
+				\textcolor{gray}{\footnotesize #3}\\[0.5em]%
+				\textcolor{gray}{\footnotesize File: figures/#2}%
+			}%
+		}%
+	}%
+}
+% ======================================================= %
+% LAYOUT SETTINGS
+% ======================================================= %
+\newlength{\columnspacing}
+\setlength{\columnspacing}{0.8cm}
+\newcommand{\questionfontsize}{\normalsize}
+\newlength{\alternativespacing}
+\setlength{\alternativespacing}{0.5em}
+\newlength{\questionspacing}
+\setlength{\questionspacing}{-0.5em}
+\newlength{\questiontoalternativespacing}
+\setlength{\questiontoalternativespacing}{0.5em}
+% ======================================================= %
+% ALTERNATIVE COMMANDS
+% ======================================================= %
+\newcommand{\Alternative}[2]{%
+	\vspace{\questiontoalternativespacing}%
+	\noindent%
+	\ifthenelse{\boolean{showanswers}}{%
+		\ifthenelse{\equal{#2}{}}{%
+			\ensuremath{\square}% incorrect alternative
+		}{%
+			\ensuremath{\blacksquare}% correct alternative
+		}%
+	}{%
+		\ensuremath{\square}% student version
+	}%
+	\hspace{0.3em}%
+	\begin{minipage}[t]{0.88\linewidth}
+		\raggedright #1
+	\end{minipage}\\[\alternativespacing]
+	\setlength{\questiontoalternativespacing}{0pt}%
+}
+% ======================================================= %
+% QUESTION COUNTER AND COMMAND
+% ======================================================= %
+% Counter for automatic question numbering
+\newcounter{questioncounter}
+\setcounter{questioncounter}{0}
+% Main command for questions with automatic numbering (SAME LINE)
+\newcommand{\Question}[1][]{%
+	\setlength{\questiontoalternativespacing}{0.5em}% Restore spacing
+	\stepcounter{questioncounter}% Increment counter
+	\vspace{\questionspacing}% Spacing before question
+	\noindent% Remove indentation
+	\ifthenelse{\equal{#1}{}}{%
+		\textbf{\questionfontsize Question \thequestioncounter:} % Automatic numbering
+	}{%
+		\textbf{\questionfontsize #1} % Custom text if provided
+	}%
+	\setlength{\parindent}{0pt}% Remove paragraph indentation
+}
+% Optional command to reset counter (useful between sections)
+\newcommand{\resetquestions}{\setcounter{questioncounter}{0}}
+% Optional command to set a specific number for the next question
+\newcommand{\setquestion}[1]{\setcounter{questioncounter}{#1}\addtocounter{questioncounter}{-1}}
+
+% Legacy command support (for backwards compatibility)
+\newcommand{\pergunta}[1][]{\Question[#1]}
+\newcommand{\alternativa}[2]{\Alternative{#1}{#2}}
+
+% ======================================================= %
+% SECTIONS
+% ======================================================= %
+\newcommand{\sectiontitle}[1]{%
+	\phantomsection%
+	\addcontentsline{toc}{section}{#1}%
+	\markboth{#1}{#1}% Sets the section header
+	\noindent
+	\adjustbox{valign=c,width=\linewidth}{%
+		\colorbox{gray!20}{%
+			\parbox{\linewidth}{%
+				\centering%
+				\large\bfseries #1%
+			}%
+		}%
+	}%
+	\par
+	\vspace{1em}%
+}
+% ======================================================= %
+% COLUMN BREAK COMMAND
+% ======================================================= %
+\newcommand{\breakcolumnhere}{\vfill\columnbreak}
+% ======================================================= %
+% STANDARDIZED HEADER
+% ======================================================= %
+\newcommand{\examheader}{%
+	\gradebox
+	\begin{center}
+		\vspace{-1cm}
+		\imagewithfallback[width=0.4\textwidth]{institution-logomark.png}{<institution name>}\\[-0.3em]
+		
+		{\scriptsize\color{blue!50!black}
+			<institution address>\\
+			<institution contact info>
+		} \vspace{1.5em}
+		
+		\adjustbox{valign=c}{%
+			\colorbox{gray!20}{%
+				\parbox[c]{\linewidth}{%
+					\centering%
+					\textbf{\Large \subject}%
+				}%
+			}%
+		}
+		\vspace{-1.0em}
+	\end{center}
+	
+	\vspace{0.3em}
+	\textbf{Full name:} \rule{0.4\linewidth}{0.4pt} \hfill
+	\textbf{ID number:} \rule{0.25\linewidth}{0.4pt}
+	
+	\vspace{0.5em}
+	{\small
+		\textbf{Date:} \examdate \hfill
+		\textbf{Period:} \period \hfill
+		\textbf{Version:} \examversion \hfill
+		\textbf{Duration:} \examduration \hfill
+		\textbf{Teacher:} \teacher
+	}
+	
+	\vspace{1em}
+	\textbf{Instructions:}
+	\begin{itemize}[leftmargin=4.0em, itemsep=-0.2em]
+		\item Read questions and answer options carefully before making your choice.
+		\item Mark the correct answer by completely filling the square of the chosen option.
+		\item Each question has only one correct answer. Make sure to mark only one option.
+		\item Use blue or black pen. Do not use pencil or red pen.
+	\end{itemize}
+	
+	\vspace{0.5em}
+	\hrule
+	\vspace{0.5em}
+	\thispagestyle{firstpage}%
+}
+% ======================================================= %
+% SPECIAL CONFIGURATION FOR FIRST PAGE
+% ======================================================= %
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\fancyfoot[C]{\thepage\ of \pageref{LastPage}}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0.4pt}%
+}
+% ======================================================= %
+\begin{document}
+	\thispagestyle{firstpage}
+	\examheader
+	
+	\setlength{\columnsep}{\columnspacing}
+	\setlength{\columnseprule}{0pt}
+	\begin{multicols}{2}
+		
+	\selectlanguage{portuguese}
+	\sectiontitle{Hino Nacional Brasileiro}
+	
+	\Question
+	Considerando o processo de oficialização do Hino Nacional Brasileiro no final do século XIX, qual compositor foi responsável pela criação da melodia que se tornou oficialmente reconhecida em 1890?
+	
+	\Alternative{Carlos Gomes}{}
+	\Alternative{Alberto Nepomuceno}{}
+	\Alternative{Francisco Manuel da Silva}{OK}
+	\Alternative{Heitor Villa-Lobos}{}
+	\Alternative{Antônio Carlos Jobim}{}
+	
+	\Question
+	O Hino Nacional Brasileiro passou por diferentes fases. Em que data ele foi executado pela primeira vez, ainda sob o título de \enquote{Hino ao 7 de abril}, em homenagem à abdicação de Dom Pedro I?
+	
+	\Alternative{7 de setembro de 1822}{}
+	\Alternative{15 de novembro de 1889}{}
+	\Alternative{21 de abril de 1831}{}
+	\Alternative{25 de março de 1824}{}
+	\Alternative{13 de abril de 1831}{OK}
+	
+	\Question
+	Durante as comemorações do centenário da Independência do Brasil, foi composta a letra que acompanha o Hino Nacional Brasileiro até hoje. Quem foi o autor que se tornou parte oficial do hino?
+	
+	\Alternative{Olavo Bilac}{}
+	\Alternative{Gonçalves Dias}{}
+	\Alternative{Castro Alves}{}
+	\Alternative{Joaquim Osório Duque-Estrada}{OK}
+	\Alternative{Manuel Bandeira}{}
+	
+	\Question
+	De acordo com a Lei n° 5.700/1971, que regulamenta os símbolos nacionais, em qual das situações abaixo é exigida a execução apenas da introdução e do coro do Hino Nacional Brasileiro, sem a repetição da segunda parte?
+	
+	\Alternative{Cerimônias religiosas de sentido patriótico}{OK}
+	\Alternative{Abertura de sessões cívicas}{}
+	\Alternative{Hasteamento da Bandeira Nacional}{}
+	\Alternative{Cerimônias oficiais do Governo Federal}{}
+	\Alternative{Programas de rádio e televisão às 19 horas}{}
+	
+	\Question
+	O Hino Nacional Brasileiro contém diversas imagens poéticas que exaltam o país. Qual dos versos abaixo faz uma referência direta à constelação do Cruzeiro do Sul, símbolo presente na bandeira nacional?
+	
+	\Alternative{\enquote{Gigante pela própria natureza}}{}
+	\Alternative{\enquote{Fulguras, ó Brasil, florão da América}}{}
+	\Alternative{\enquote{A imagem do Cruzeiro resplandece}}{OK}
+	\Alternative{\enquote{Em teu formoso céu, risonho e límpido}}{}
+	\Alternative{\enquote{Do que a terra mais garrida}}{}
+	
+	% Spanish section
+	\selectlanguage{spanish}
+	\sectiontitle{Himno Nacional de Bolivia}
+	
+	\Question
+	En el contexto de la historia musical boliviana, ?`quién fue el compositor responsable de la música del Himno Nacional de Bolivia, pieza que ha acompañado actos oficiales desde el siglo XIX?
+	
+	\Alternative{José Ignacio de Sanjinés}{}
+	\Alternative{Eduardo Abaroa}{}
+	\Alternative{Leopoldo Benedetto Vincenti}{OK}
+	\Alternative{Franz Tamayo}{}
+	\Alternative{Modesto Omiste}{}
+	
+	\Question
+	La letra del Himno Nacional de Bolivia fue escrita por un destacado intelectual boliviano, reflejando el espíritu patriótico de la época. ?`Quién fue el autor de esta letra?
+	
+	\Alternative{Ricardo José Bustamante}{}
+	\Alternative{Franz Tamayo}{}
+	\Alternative{Adela Zamudio}{}
+	\Alternative{Manuel José Cortés}{}
+	\Alternative{José Ignacio de Sanjinés}{OK}
+	
+	\Question
+	El Himno Nacional de Bolivia fue oficialmente adoptado en una fecha significativa para la consolidación de los símbolos patrios. ?`En qué año se oficializó su uso como himno nacional?
+	
+	\Alternative{1825}{}
+	\Alternative{1842}{}
+	\Alternative{1845}{OK}
+	\Alternative{1851}{}
+	\Alternative{1879}{}
+	
+	\Question
+	El Himno Nacional de Bolivia comienza con un verso que evoca el destino favorable de la nación. ?`Cuál es el primer verso que da inicio a esta emblemática composición?
+	
+	\Alternative{\enquote{De la Patria, el alto nombre}}{}
+	\Alternative{\enquote{Compatriotas, la Patria muriendo}}{}
+	\Alternative{\enquote{Bolivianos, el hado propicio}}{OK}
+	\Alternative{\enquote{Gloria a Bolivia, tierra bendita}}{}
+	\Alternative{\enquote{Surge ya la nueva aurora}}{}
+	
+	\Question
+	Además del coro, el Himno Nacional de Bolivia está compuesto por varias estrofas que desarrollan su mensaje patriótico. ?`Cuántas estrofas tiene oficialmente esta obra musical?
+	
+	\Alternative{Tres estrofas}{}
+	\Alternative{Cuatro estrofas}{}
+	\Alternative{Cinco estrofas}{}
+	\Alternative{Seis estrofas}{}
+	\Alternative{Nueve estrofas}{OK}
+	
+	% French section
+	\selectlanguage{french}
+	\sectiontitle{L'Hymne National Français}
+	
+	\Question
+	La Marseillaise, hymne emblématique de la République française, a été composée en 1792 dans un contexte de guerre révolutionnaire. Quel musicien est à l'origine de cette œuvre patriotique devenue symbole national ?
+	
+	\Alternative{Claude Joseph Rouget de Lisle}{OK}
+	\Alternative{Jean-Baptiste Lully}{}
+	\Alternative{Hector Berlioz}{}
+	\Alternative{François-Joseph Gossec}{}
+	\Alternative{Jean-Philippe Rameau}{}
+	
+	\Question
+	La ville où fut composée la Marseillaise joue un rôle important dans son histoire et son nom. Dans quelle ville française ce chant révolutionnaire a-t-il été créé ?
+	
+	\Alternative{Paris}{}
+	\Alternative{Marseille}{}
+	\Alternative{Lyon}{}
+	\Alternative{Strasbourg}{OK}
+	\Alternative{Bordeaux}{}
+	
+	\Question
+	Avant d’être connue sous le nom de \enquote{La Marseillaise}, cette œuvre portait un autre titre reflétant son usage militaire initial. Quel était le titre original donné à ce chant lors de sa création ?
+	
+	\Alternative{Chant de guerre de l'armée française}{}
+	\Alternative{Hymne des Marseillais}{}
+	\Alternative{Chant de guerre pour l'armée du Rhin}{OK}
+	\Alternative{Chant patriotique de la République}{}
+	\Alternative{Marche des volontaires}{}
+	
+	\Question
+	La reconnaissance officielle d’un hymne national est un acte symbolique fort. En quelle année la Marseillaise a-t-elle été adoptée comme hymne national officiel de la France ?
+	
+	\Alternative{1792}{}
+	\Alternative{1795}{OK}
+	\Alternative{1804}{}
+	\Alternative{1815}{}
+	\Alternative{1848}{}
+	
+	\Question
+	Le nom \enquote{La Marseillaise} ne provient pas de son lieu de composition, mais d’un événement marquant lié à sa diffusion. Pourquoi ce chant porte-t-il ce nom ?
+	
+	\Alternative{Il a été composé à Marseille}{}
+	\Alternative{Il célèbre une victoire à Marseille}{}
+	\Alternative{Les fédérés marseillais l'ont popularisé à Paris}{OK}
+	\Alternative{Le compositeur était marseillais}{}
+	\Alternative{Il a été chanté pour la première fois à Marseille}{}
+	
+	% Italian section
+	\selectlanguage{italian}
+	\sectiontitle{L'Inno Nazionale Italiano}
+	
+	\Question
+	L'inno nazionale italiano è conosciuto anche con il titolo \enquote{Fratelli d'Italia}. Chi fu l'autore del testo, scritto in un periodo di forte sentimento patriottico durante il Risorgimento?
+	
+	\Alternative{Giuseppe Verdi}{}
+	\Alternative{Alessandro Manzoni}{}
+	\Alternative{Goffredo Mameli}{OK}
+	\Alternative{Giuseppe Garibaldi}{}
+	\Alternative{Gabriele D'Annunzio}{}
+	
+	\Question
+	La melodia dell'inno nazionale italiano è stata composta da un musicista ligure, su richiesta dell'autore del testo. Chi fu il compositore della musica dell'Inno di Mameli?
+	
+	\Alternative{Gioachino Rossini}{}
+	\Alternative{Michele Novaro}{OK}
+	\Alternative{Giuseppe Verdi}{}
+	\Alternative{Vincenzo Bellini}{}
+	\Alternative{Pietro Mascagni}{}
+	
+	\Question
+	Il testo dell'inno nazionale italiano fu scritto in un momento cruciale del Risorgimento. In quale anno Goffredo Mameli compose le parole de \enquote{Il Canto degli Italiani}?
+	
+	\Alternative{1846}{}
+	\Alternative{1847}{OK}
+	\Alternative{1848}{}
+	\Alternative{1861}{}
+	\Alternative{1870}{}
+	
+	\Question
+	L'inno nazionale italiano inizia con un verso che è diventato simbolo dell'identità nazionale. Quale tra i seguenti versi apre ufficialmente l'inno?
+	
+	\Alternative{\enquote{Italia, Italia, sacra terra}}{}
+	\Alternative{\enquote{Viva l'Italia unita e forte}}{}
+	\Alternative{\enquote{Fratelli d'Italia, l'Italia s'è desta}}{OK}
+	\Alternative{\enquote{Gloria all'Italia nostra}}{}
+	\Alternative{\enquote{Sorgi Italia, dal tuo sonno}}{}
+	
+	\Question
+	Sebbene fosse già ampiamente utilizzato, \enquote{Il Canto degli Italiani} è stato riconosciuto ufficialmente come inno nazionale solo in epoca repubblicana. In quale anno è avvenuta questa ufficializzazione?
+	
+	\Alternative{1946}{OK}
+	\Alternative{1948}{}
+	\Alternative{1861}{}
+	\Alternative{1922}{}
+	\Alternative{1870}{}
+	
+	% German section
+	\selectlanguage{german}
+	\sectiontitle{Die Deutsche Nationalhymne}
+	
+	\Question
+	Die Melodie der deutschen Nationalhymne stammt von einem bekannten Komponisten der Klassik. Wer komponierte ursprünglich diese Melodie, die heute mit dem Deutschlandlied verbunden ist?
+	
+	\Alternative{Ludwig van Beethoven}{}
+	\Alternative{Johann Sebastian Bach}{}
+	\Alternative{Joseph Haydn}{OK}
+	\Alternative{Richard Wagner}{}
+	\Alternative{Johannes Brahms}{}
+	
+	\Question
+	Der Text des Deutschlandliedes wurde im 19. Jahrhundert verfasst und spiegelt die damaligen nationalen Ideale wider. Wer war der Autor dieses Liedtextes?
+	
+	\Alternative{Johann Wolfgang von Goethe}{}
+	\Alternative{Friedrich Schiller}{}
+	\Alternative{Heinrich Heine}{}
+	\Alternative{August Heinrich Hoffmann von Fallersleben}{OK}
+	\Alternative{Theodor Körner}{}
+	
+	\Question
+	Das Deutschlandlied besteht aus drei Strophen, doch seit 1952 wird nur eine davon offiziell als Nationalhymne verwendet. Welche Strophe wird seitdem bei offiziellen Anlässen gesungen?
+	
+	\Alternative{Die erste Strophe}{}
+	\Alternative{Die zweite Strophe}{}
+	\Alternative{Die dritte Strophe}{OK}
+	\Alternative{Alle drei Strophen}{}
+	\Alternative{Die erste und dritte Strophe}{}
+	
+	\Question
+	Die heute gesungene Strophe der deutschen Nationalhymne beginnt mit einem markanten Vers, der zentrale Werte der Bundesrepublik Deutschland betont. Mit welchen Worten beginnt diese Strophe?
+	
+	\Alternative{\enquote{Deutschland, Deutschland über alles}}{}
+	\Alternative{\enquote{Deutsche Frauen, deutsche Treue}}{}
+	\Alternative{\enquote{Einigkeit und Recht und Freiheit}}{OK}
+	\Alternative{\enquote{Blüh im Glanze dieses Glückes}}{}
+	\Alternative{\enquote{Von der Maas bis an die Memel}}{}
+	
+	\Question
+	Das Deutschlandlied wurde in einer Zeit des politischen Umbruchs und der nationalen Bewegung verfasst. In welchem Jahr wurde der Text dieses Liedes ursprünglich geschrieben?
+	
+	\Alternative{1797}{}
+	\Alternative{1815}{}
+	\Alternative{1841}{OK}
+	\Alternative{1871}{}
+	\Alternative{1918}{}
+	
+	% Romanian section
+	\selectlanguage{romanian}
+	\sectiontitle{Imnul Național al României}
+	
+	\Question
+	Imnul național al României, cunoscut sub titlul \enquote{Deșteaptă-te, române}, are o istorie profund legată de mișcările revoluționare din secolul al XIX-lea. Cine este autorul versurilor acestui imn, care exprimă chemarea la unitate și libertate?
+	
+	\Alternative{Vasile Alecsandri}{}
+	\Alternative{Mihai Eminescu}{}
+	\Alternative{Andrei Mureșanu}{OK}
+	\Alternative{George Coșbuc}{}
+	\Alternative{Ion Heliade Rădulescu}{}
+	
+	\Question
+	Melodia imnului \enquote{Deșteaptă-te, române} a fost compusă pentru a însoți versurile lui Andrei Mureșanu. Cine este compozitorul care a creat această muzică devenită simbol național?
+	
+	\Alternative{Ciprian Porumbescu}{}
+	\Alternative{Anton Pann}{OK}
+	\Alternative{Tiberiu Brediceanu}{}
+	\Alternative{George Enescu}{}
+	\Alternative{Dinu Lipatti}{}
+	
+	\Question
+	Imnul actual al României a fost adoptat oficial într-un moment de schimbare politică majoră. În ce an a devenit \enquote{Deșteaptă-te, române} imnul național al țării?
+	
+	\Alternative{1918}{}
+	\Alternative{1947}{}
+	\Alternative{1989}{}
+	\Alternative{1990}{OK}
+	\Alternative{2001}{}
+	
+	\Question
+	Versurile imnului național românesc exprimă o chemare la trezirea conștiinței naționale. Care este primul vers cu care începe acest imn?
+	
+	\Alternative{\enquote{Români, uniți-vă în cuget și-n simțiri}}{}
+	\Alternative{\enquote{Sculați-vă din somnul cel de moarte}}{}
+	\Alternative{\enquote{Deșteaptă-te, române, din somnul cel de moarte}}{OK}
+	\Alternative{\enquote{Trăiască România liberă și unită}}{}
+	\Alternative{\enquote{Ridică-te, nație mândră și curajoasă}}{}
+	
+	\Question
+	Înainte de adoptarea imnului \enquote{Deșteaptă-te, române}, România a avut mai multe imnuri oficiale. Care dintre următoarele NU a fost niciodată imn național al României?
+	
+	\Alternative{\enquote{Trăiască Regele}}{}
+	\Alternative{\enquote{Pe-al nostru steag e scris Unire}}{}
+	\Alternative{\enquote{Trei culori}}{}
+	\Alternative{\enquote{Hora Unirii}}{OK}
+	\Alternative{\enquote{Deșteaptă-te, române}}{}
+	
+	% English section
+	\selectlanguage{english}
+	\sectiontitle{End}
+
+	\end{multicols}	
+\end{document}

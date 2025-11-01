@@ -1,0 +1,8 @@
+# Ignora arquivos temporários de LaTeX
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
