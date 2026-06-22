@@ -1,0 +1,588 @@
+Você está trabalhando com um script LaTeX para geração automática de provas educacionais. O script possui as seguintes características principais:
+
+### Funcionalidades Atuais:
+- **Sistema de gabarito**: Controle via `\setboolean{showanswers}{true/false}` para gerar versões para professor (com gabarito) e aluno (sem gabarito)
+- **Numeração automática**: Seções numeradas com algarismos romanos (I, II, III, etc.) e perguntas numeradas sequencialmente
+- **Formatação em duas colunas**: Layout otimizado para impressão
+- **Equações inline**: Uso de `$...$` para expressões matemáticas
+- **Alternativas com marcação**: Sistema de quadrados vazios (□) para alunos e preenchidos (■) para gabarito
+
+### Estrutura dos Comandos:
+- `\titulosecao{Nome da Seção}` - Cria seções temáticas com numeração romana automática
+- `\pergunta` - Cria perguntas numeradas automaticamente
+- `\alternativa{Texto da alternativa}{correta}` - Cria alternativas (usar "correta" para alternativa correta, deixar vazio para incorreta)
+
+### Seções Temáticas Atuais:
+O script atualmente contém as seguintes seções de matemática do ensino fundamental:
+
+1. **Operações com números inteiros**
+2. **Múltiplos, divisores e critérios de divisibilidade**
+3. **Frações e operações com frações**
+4. **Números decimais e porcentagens**
+5. **Expressões numéricas (com parênteses, colchetes, etc.)**
+6. **Equações do 1º grau**
+7. **Proporcionalidade e regra de três**
+8. **Geometria plana: perímetro e área**
+9. **Sistema de medidas (comprimento, massa, tempo, capacidade)**
+10. **Interpretação de gráficos e tabelas**
+
+## Tarefa Solicitada
+
+Adicione **novas perguntas** para cada seção temática existente de forma que sejam completadas 10 perguntas por seção, seguindo estes critérios:
+
+### Diretrizes para as Novas Perguntas:
+1. **Nível de dificuldade**: Adequado ao ensino fundamental
+2. **Formato**: Múltipla escolha com 4 alternativas cada
+3. **Diversidade**: Perguntas que complementem e variem os conceitos já abordados na seção
+4. **Clareza**: Enunciados claros e objetivos
+5. **Matemática**: Use `$...$` para expressões matemáticas inline
+6. **Multiplicação**: Quando necessário, use `\cdot` para produtos (não `\times`)
+
+### Estrutura a Seguir:
+```latex
+Considere o seguinte script:
+
+\documentclass[11pt]{article}
+\pagestyle{empty}
+% ===================== PACOTES =====================
+\usepackage[margin=1cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{ifthen}
+\usepackage{xcolor}
+\usepackage{adjustbox}
+\usepackage{amssymb}
+\usepackage{ragged2e}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{pgffor} % Para loops
+\usepackage{pgfmath} % Para operações matemáticas
+\usepackage{arrayjob} % Para arrays
+\usepackage{lcg} % Para números aleatórios
+\usepackage{calc} % Para cálculos
+
+% ===================== TAMANHO DOS QUADRADOS =====================
+\newcommand{\quadradotamanho}{0.8ex}
+
+% ===================== REGRA GERAL PARA MULTIPLICAÇÃO =====================
+\renewcommand{\times}{\cdot}
+
+% ===================== GABARITO E EMBARALHAMENTO =====================
+\newboolean{showanswers}
+\setboolean{showanswers}{false} % true para gabarito, false para alunos
+
+\newboolean{shuffleanswers}
+\setboolean{shuffleanswers}{true} % true para embaralhar alternativas
+
+% ===================== CONFIGURAÇÃO DO GERADOR ALEATÓRIO =====================
+\pgfmathsetseed{\number\pdfrandomseed} % Seed baseado no tempo
+\reinitrand[first=1, last=24, counter=rand] % Inicializa gerador
+
+% ===================== CONFIGURAÇÕES =====================
+\newlength{\espacocolunas}
+\setlength{\espacocolunas}{0.8cm} % Parâmetro para espaçamento entre colunas
+
+% Parâmetros de formatação
+\newcommand{\tamanhofontepergunta}{\normalsize} % Tamanho da fonte das perguntas
+\newlength{\espacoalternativas}
+\setlength{\espacoalternativas}{0.4em} % Espaçamento entre alternativas
+\newlength{\espacoperguntas}
+\setlength{\espacoperguntas}{-0.5em} % Espaçamento entre perguntas
+\newlength{\espacoperguntaalternativas}
+\setlength{\espacoperguntaalternativas}{0.5em} % Espaçamento entre pergunta e alternativas
+
+% ===================== CONTADOR DE SEÇÕES COM NÚMEROS ROMANOS =====================
+\newcounter{secaocounter}
+\setcounter{secaocounter}{0}
+
+% ===================== ARRAYS PARA EMBARALHAMENTO =====================
+\newarray\alternativas
+\newarray\respostas
+\newarray\ordem
+\newcounter{altnumber}
+\newcounter{altloop}
+\newcounter{tempcount}
+
+% ===================== FUNÇÃO PARA EMBARALHAMENTO ALEATÓRIO =====================
+\newcommand{\gerarordemaleatoria}{%
+  % Inicializa array com ordem padrão
+  \ordem(1)={1}
+  \ordem(2)={2}
+  \ordem(3)={3}
+  \ordem(4)={4}
+  
+  % Algoritmo Fisher-Yates simplificado
+  \setcounter{tempcount}{4}
+  \whiledo{\value{tempcount}>1}{%
+    \rand % Gera número aleatório
+    \pgfmathparse{int(mod(\arabic{rand}, \arabic{tempcount}) + 1)}
+    \let\randpos\pgfmathresult
+    
+    % Troca posições
+    \checkord(\arabic{tempcount})
+    \let\temp\cachedata
+    \ordem(\arabic{tempcount})={\ordem(\randpos)}
+    \ordem(\randpos)={\temp}
+    
+    \addtocounter{tempcount}{-1}
+  }
+}
+
+% ===================== COMANDO PARA EMBARALHAR ALTERNATIVAS =====================
+\newcommand{\embaralharalternativas}[8]{%
+  % Armazena alternativas e respostas
+  \alternativas(1)={#1}
+  \alternativas(2)={#2}
+  \alternativas(3)={#3}
+  \alternativas(4)={#4}
+  \respostas(1)={#5}
+  \respostas(2)={#6}
+  \respostas(3)={#7}
+  \respostas(4)={#8}
+  
+  \ifthenelse{\boolean{shuffleanswers}}{%
+    % Gera ordem aleatória
+    \gerarordemaleatoria
+    % Mostra alternativas na ordem embaralhada
+    \setcounter{altloop}{1}
+    \whiledo{\value{altloop}<5}{%
+      \checkord(\arabic{altloop})
+      \let\pos\cachedata
+      \mostraralternativa{\alternativas(\pos)}{\respostas(\pos)}
+      \stepcounter{altloop}
+    }
+  }{%
+    % Ordem original
+    \mostraralternativa{\alternativas(1)}{\respostas(1)}
+    \mostraralternativa{\alternativas(2)}{\respostas(2)}
+    \mostraralternativa{\alternativas(3)}{\respostas(3)}
+    \mostraralternativa{\alternativas(4)}{\respostas(4)}
+  }
+}
+
+% ===================== COMANDO PARA MOSTRAR ALTERNATIVA =====================
+\newcommand{\mostraralternativa}[2]{%
+  \vspace{\espacoperguntaalternativas}% Espaçamento antes de cada alternativa
+  \noindent% Garante que não há indentação
+  \ifthenelse{\boolean{showanswers}}{%
+    \ifthenelse{\equal{#2}{}}{%
+      \ensuremath{\square}% alternativa incorreta
+    }{%
+      \ensuremath{\blacksquare}% alternativa correta
+    }%
+  }{%
+    \ensuremath{\square}% versão do aluno
+  }%
+  \hspace{0.4em} #1\\[\espacoalternativas]
+  \setlength{\espacoperguntaalternativas}{0pt}% Zera para próximas alternativas
+}
+
+% ===================== ALTERNATIVA (VERSÃO ORIGINAL MANTIDA) =====================
+\newcommand{\alternativa}[2]{%
+  \mostraralternativa{#1}{#2}
+}
+
+% ===================== CONTADOR DE PERGUNTAS =====================
+\newcounter{perguntacounter}
+\setcounter{perguntacounter}{0}
+
+% ===================== COMANDO PERGUNTA =====================
+\newcommand{\pergunta}[1][]{%
+  \setlength{\espacoperguntaalternativas}{0.5em}% Restaura automaticamente
+  \stepcounter{perguntacounter}% Incrementa o contador
+  \vspace{\espacoperguntas}%
+  \raggedright% Alinhamento à esquerda apenas para o título
+  \ifthenelse{\equal{#1}{}}{%
+    \textbf{\tamanhofontepergunta Pergunta \theperguntacounter:}% Numeração automática
+  }{%
+    \textbf{\tamanhofontepergunta #1}% Texto personalizado se fornecido
+  }%
+  \par% Força uma nova linha
+  \justifying% Retorna ao alinhamento justificado
+  \setlength{\parindent}{0pt}% Remove indentação de parágrafos
+}
+
+% ===================== FORMATAÇÃO DE SEÇÕES COM NÚMEROS ROMANOS =====================
+\newcommand{\titulosecao}[1]{%
+  \stepcounter{secaocounter}% Incrementa o contador de seções
+  \phantomsection% Para hyperref
+  \addcontentsline{toc}{section}{\Roman{secaocounter}. #1}% Adiciona ao outline com numeração romana
+  \noindent
+  \adjustbox{valign=c,width=\linewidth}{%
+    \colorbox{gray!20}{%
+      \parbox{\linewidth}{%
+        \centering%
+        \large\bfseries \Roman{secaocounter}. #1% Numeração romana automática
+      }%
+    }%
+  }%
+  \par
+  \vspace{1em}%
+}
+
+% ===================== COMANDO PARA PERGUNTA COM ALTERNATIVAS EMBARALHADAS =====================
+\newcommand{\perguntacomembaralhamento}[9][]{%
+  \pergunta[#1]
+  #2 % Texto da pergunta
+  \embaralharalternativas{#3}{#4}{#5}{#6}{#7}{#8}{#9}{}
+}
+
+% ===================== DOCUMENTO =====================
+\begin{document}
+
+\vspace{0.5em}
+\setlength{\columnsep}{\espacocolunas}
+\setlength{\columnseprule}{0pt}
+\begin{multicols}{2}
+
+\titulosecao{Operações com números inteiros}
+
+\pergunta
+Qual é o resultado da operação: $-7 + 4$?
+
+\alternativa{-11}{}
+\alternativa{3}{}
+\alternativa{-3}{correta}
+\alternativa{11}{}
+
+\titulosecao{Múltiplos, divisores e critérios de divisibilidade}
+
+\pergunta
+Qual dos números abaixo é múltiplo de 6 e também divisível por 4?
+
+\alternativa{18}{}
+\alternativa{12}{}
+\alternativa{36}{}
+\alternativa{24}{correta}
+
+\titulosecao{Frações e operações com frações}
+
+\pergunta
+Qual é o resultado da operação: $\dfrac{3}{4} + \dfrac{2}{3}$?
+
+\alternativa{$\dfrac{6}{7}$}{}
+\alternativa{$\dfrac{9}{12}$}{}
+\alternativa{$\dfrac{17}{12}$}{correta}
+\alternativa{$\dfrac{5}{7}$}{}
+
+\titulosecao{Números decimais e porcentagens}
+
+\pergunta
+Em uma liquidação, um produto que custava R\$ 80,00 passou a custar R\$ 60,00. Qual foi a porcentagem de desconto?
+
+\alternativa{20\%}{}
+\alternativa{15\%}{}
+\alternativa{30\%}{}
+\alternativa{25\%}{correta}
+
+\titulosecao{Expressões numéricas (com parênteses, colchetes, etc.)}
+
+\pergunta
+Qual é o valor da expressão: $6 + [3 \cdot (2 + 1)]$?
+
+\alternativa{21}{}
+\alternativa{15}{correta}
+\alternativa{12}{}
+\alternativa{27}{}
+
+\titulosecao{Equações do 1º grau}
+
+\pergunta
+Qual é a solução da equação: $3x - 4 = 11$?
+
+\alternativa{6}{}
+\alternativa{7}{}
+\alternativa{5}{correta}
+\alternativa{3}{}
+
+\titulosecao{Proporcionalidade e regra de três}
+
+\pergunta
+Se 3 metros de tecido custam R\$ 45,00, quanto custam 5 metros do mesmo tecido?
+
+\alternativa{R\$ 50,00}{}
+\alternativa{R\$ 60,00}{}
+\alternativa{R\$ 90,00}{}
+\alternativa{R\$ 75,00}{correta}
+
+\titulosecao{Geometria plana: perímetro e área}
+
+\pergunta
+Qual é a área de um retângulo com 5 cm de base e 8 cm de altura?
+
+\alternativa{13 cm$^2$}{}
+\alternativa{26 cm$^2$}{}
+\alternativa{20 cm$^2$}{}
+\alternativa{40 cm$^2$}{correta}
+
+\titulosecao{Sistema de medidas (comprimento, massa, tempo, capacidade)}
+
+\pergunta
+Qual unidade de medida é adequada para medir a capacidade de um galão de água?
+
+\alternativa{Metro}{}
+\alternativa{Quilograma}{}
+\alternativa{Litro}{correta}
+\alternativa{Segundo}{}
+
+\titulosecao{Interpretação de gráficos e tabelas}
+
+\pergunta
+Um gráfico mostra o número de livros vendidos por mês. Em janeiro foram 40 livros, em fevereiro 60 e em março 50. Qual foi o total de livros vendidos no trimestre?
+
+\alternativa{130}{}
+\alternativa{140}{}
+\alternativa{150}{correta}
+\alternativa{120}{}
+
+\end{multicols}
+
+% ===================== EXEMPLO DE USO DO EMBARALHAMENTO =====================
+% Para testar o embaralhamento, descomente as linhas abaixo e defina:
+% \setboolean{shuffleanswers}{true}
+% \setboolean{showanswers}{false}
+% 
+% \newpage
+% \setboolean{shuffleanswers}{true}
+% \setcounter{perguntacounter}{0}
+% \setcounter{secaocounter}{0}
+% 
+% \begin{multicols}{2}
+% \titulosecao{Teste com Embaralhamento}
+% 
+% \perguntacomembaralhamento
+% {Qual é o resultado de $2 \cdot 3$?}
+% {4}{5}{6}{7}
+% {}{correta}{}{}
+% 
+% \perguntacomembaralhamento  
+% {Qual é o resultado de $4 \cdot 5$?}
+% {15}{20}{25}{30}
+% {}{}{}{{correta}}
+
+\end{document}
+```
+
+### Observações Importantes:
+- Mantenha todas as perguntas existentes intactas
+- Adicione exatamente 2 novas perguntas por seção
+- Certifique-se de que apenas UMA alternativa por pergunta seja marcada como "correta"
+- Respeite o contexto temático de cada seção
+- Mantenha a formatação e estrutura do código LaTeX (escrito no Overleaf) original
+
+## Resultado Esperado
+
+Forneça o script LaTeX completo e modificado, com todas as seções originais mantidas e as novas perguntas adicionadas. O script deve continuar funcionando perfeitamente para gerar provas com gabarito e sem gabarito.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# PROMPT OTIMIZADO - EXPANSÃO DE SCRIPT LATEX DE PROVAS
+
+## CONTEXTO
+Você irá expandir um script LaTeX existente para geração automática de provas de matemática do ensino fundamental. O script atual possui 10 seções temáticas com apenas 1 pergunta cada. Sua tarefa é completar cada seção com 9 perguntas adicionais (totalizando 10 por seção).
+
+## CARACTERÍSTICAS DO SCRIPT ATUAL
+- Sistema de gabarito: `\setboolean{showanswers}{true/false}`
+- Numeração automática de seções (algarismos romanos) e perguntas
+- Layout em duas colunas
+- Comandos principais:
+  - `\titulosecao{Nome}` - Cria seções numeradas
+  - `\pergunta` - Cria perguntas numeradas
+  - `\alternativa{Texto}{correta}` - Cria alternativas (deixar vazio se incorreta)
+
+## SEÇÕES EXISTENTES (completar cada uma)
+1. Operações com números inteiros
+2. Múltiplos, divisores e critérios de divisibilidade
+3. Frações e operações com frações
+4. Números decimais e porcentagens
+5. Expressões numéricas (com parênteses, colchetes, etc.)
+6. Equações do 1º grau
+7. Proporcionalidade e regra de três
+8. Geometria plana: perímetro e área
+9. Sistema de medidas (comprimento, massa, tempo, capacidade)
+10. Interpretação de gráficos e tabelas
+
+## DIRETRIZES PARA NOVAS PERGUNTAS
+- **Quantidade**: 9 perguntas adicionais por seção (totalizando 10)
+- **Formato**: Múltipla escolha com 4 alternativas cada
+- **Nível**: Ensino fundamental
+- **Matemática**: Use `$...$` para expressões inline e `\cdot` para multiplicação
+- **Gabarito**: APENAS UMA alternativa correta por pergunta
+- **Variação**: Diversifique os conceitos dentro de cada tema
+
+## ESTRUTURA PADRÃO DAS PERGUNTAS
+```latex
+\pergunta
+[Enunciado claro e objetivo]
+
+\alternativa{Opção A}{}
+\alternativa{Opção B}{}
+\alternativa{Opção C}{correta}
+\alternativa{Opção D}{}
+```
+
+## EXEMPLO DE PERGUNTA EXISTENTE
+```latex
+\pergunta
+Qual é o resultado da operação: $-7 + 4$?
+
+\alternativa{-11}{}
+\alternativa{3}{}
+\alternativa{-3}{correta}
+\alternativa{11}{}
+```
+
+## TAREFA ESPECÍFICA
+Complete o script LaTeX fornecido adicionando:
+- 9 perguntas na seção "Operações com números inteiros"
+- 9 perguntas na seção "Múltiplos, divisores e critérios de divisibilidade"
+- 9 perguntas na seção "Frações e operações com frações"
+- 9 perguntas na seção "Números decimais e porcentagens"
+- 9 perguntas na seção "Expressões numéricas"
+- 9 perguntas na seção "Equações do 1º grau"
+- 9 perguntas na seção "Proporcionalidade e regra de três"
+- 9 perguntas na seção "Geometria plana: perímetro e área"
+- 9 perguntas na seção "Sistema de medidas"
+- 9 perguntas na seção "Interpretação de gráficos e tabelas"
+
+## REQUISITOS TÉCNICOS
+- Mantenha TODO o código LaTeX original intacto
+- Adicione as perguntas após cada pergunta existente em sua respectiva seção
+- Mantenha a formatação e estrutura original
+- Garanta que o script continue funcionando no Overleaf
+- Respeite o contexto temático de cada seção
+
+## RESULTADO ESPERADO
+Forneça o script LaTeX completo e funcional com todas as 100 perguntas (10 por seção) distribuídas adequadamente nas 10 seções temáticas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pedre	Cimento	Areia	Agua	Impermebiliznate
+(brita)
+1.5	1	2.5	1
+0	1	3
+5	1	6
+7	1	5
+5.5	1	4
+3	1	2
+
+Betoeira ou bitorneira
+
+
+Organized Bibliography
+
+I. Numerical Methods & Linear Algebra
+
+- Issacson, E., & Keller, H. S. (1966). Analysis of Numerical Methods. John Wiley.
+- Fröberg, C. E. (1969). Introduction to Numerical Analysis. Addison-Wesley.
+- Ralston, A., & Rabinowitz, P. (1978). A First Course in Numerical Analysis. McGraw-Hill.
+- Conte, S. D., & de Boor, C. (1980). Elementary Numerical Analysis: An Algorithmic Approach. McGraw-Hill.
+- Ferziger, J. H. (1981). Numerical Methods for Engineering Application. John Wiley.
+- Johnston, R. L. (1981). Numerical Methods: A Software Approach. John Wiley.
+- Rice, J. R. (1988). Numerical Methods, Software, and Analysis. McGraw-Hill.
+- Davis, P. J., & Rabinowitz, P. (1984). Methods for Numerical Integration. Academic Press.
+- Kincaid, D., & Cheney, W. (1991). Numerical Analysis: Mathematics of Software. Brooks-Cole.
+- Jain, M. K., Iyengar, S. R. K., & Jain, R. K. (1992). Numerical Methods for Scientific and Engineering Computation. New Age International.
+
+II. Linear Algebra
+
+- Strang, G. Linear Algebra [A]_(mxn)[x]_(nx1)=[b]_(mx1).
+- Horning, A. Linear Algebra.
+
+III. Programming Languages
+
+- The Julia programming language was co-created by a team that includes Professor Alan Edelman of MIT, along with Jeff Bezanson, Stefan Karpinski, and Viral B. Shah. Alan Edelman is a professor of applied mathematics at the Massachusetts Institute of Technology (MIT) and played a leading role in the development of Julia, particularly through his direction of the Julia Lab at MIT. All four co-creators contributed significantly to the language's design and implementation, but Alan Edelman is the principal academic and professor among them.
+
+IV. Instability in Mathematical Problems
+
+- Induced and Inherent Instability associated with a mathematical problem. See: example of Wilkinson.
+
+V. Thermodynamics & Physical Chemistry Courses
+
+- 2.43 Advanced Thermodynamics, Spring Term 2024. Instructor: Gian Paolo Beretta.
+  - Room 3-442, Tuesday 2:30pm–4:30pm, Friday 11:00am–1:00pm. Room 3-351d.
+- Thermodynamics of Solids, 3.020, Spring 2021. Lecture 1: Introduction to Thermodynamics (2016). Rafael Jaramillo.
+- 5.60 Thermodynamics & Kinetics, Spring 2008. Moungi Bawendi, Keith Nelson.
+- 5.61 Physical Chemistry, Fall 2017. Professor Robert Field. Lecture 1: Historical Background; Photoelectric Effect.
+
+VI. Statistical Mechanics & Physics Courses
+
+- 8.333, Fall 2013. Statistical Mechanics I: Statistical Mechanics of Particles. Mehran Kardar. Lecture 9: Kinetic Theory of Gases Part 3.
+- Relativistic Quantum Field Theory I, 8.323, Spring 2023. Lecture 1: Classical Field Theories and Principle of Locality. Hong Liu.
+- Einstein, Oppenheimer, Feynman: Physics in the 20th Century, STS.042J / 8.225, Fall 2020. Lecture 1: Introduction. David Kaiser.
+- Classical Physics. Balakrishnan V.
+
+VII. Presentations
+
+- Presentation by Dr. Peter Kay, Senior Lecturer: Thermodynamic Cycles.
