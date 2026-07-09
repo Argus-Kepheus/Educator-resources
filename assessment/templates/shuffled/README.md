@@ -7,7 +7,8 @@ The project is intentionally compact:
 
 - reusable engine files live in `engine/`;
 - reusable template figures live in `figures/`;
-- each exam keeps metadata and section files together;
+- metadata, version entry points, and example section files live at the template
+  root;
 - Lua shuffles questions and alternatives;
 - the same content renders a student version or a teacher version.
 
@@ -24,14 +25,12 @@ assessment/templates/shuffled/
   output/
   scripts/
     build.ps1
-  examples/
-    generic-course/
-      student-version.tex
-      teacher-version.tex
-      metadata.tex
-      sections/
-        S01.tex
-        S02.tex
+  metadata.tex
+  student-version.tex
+  teacher-version.tex
+  sections/
+    S01.tex
+    S02.tex
 ```
 
 ## Requirements
@@ -46,7 +45,7 @@ assessment/templates/shuffled/
 From this folder:
 
 ```powershell
-.\scripts\build.ps1 -Path .\examples\generic-course
+.\scripts\build.ps1 -Path .
 ```
 
 This generates:
@@ -59,8 +58,8 @@ The PDFs are written to `output/`. The date and number come from `metadata.tex`.
 To build only one output:
 
 ```powershell
-.\scripts\build.ps1 -Path .\examples\generic-course -StudentOnly
-.\scripts\build.ps1 -Path .\examples\generic-course -TeacherOnly
+.\scripts\build.ps1 -Path . -StudentOnly
+.\scripts\build.ps1 -Path . -TeacherOnly
 ```
 
 The previous `-TestOnly` and `-AnswerKeyOnly` switches remain available as
@@ -69,7 +68,7 @@ aliases for compatibility.
 To remove common LaTeX temporary files after building:
 
 ```powershell
-.\scripts\build.ps1 -Path .\examples\generic-course -Clean
+.\scripts\build.ps1 -Path . -Clean
 ```
 
 ## Authoring Questions

@@ -1,0 +1,85 @@
+task: generate_latex_exam_questions
+
+description: >
+  Generate multiple-choice exam questions from the provided source material.
+  The source may be an old exam, PDF text, notes, syllabus content, textbook
+  excerpts, a draft question list, or any other instructional material. Return
+  only LaTeX question blocks compatible with the exam template.
+
+audience:
+  - Another LLM that receives source material and must produce reusable LaTeX questions.
+  - The LLM does not need to know anything about the local folder structure.
+  - The generated content will be copied manually into the final project files.
+
+language_rules:
+  - Write the output in the same language as the input source.
+  - If the input mixes languages, use the dominant language of the assessment context.
+  - Preserve technical terms, standards, acronyms, and discipline-specific vocabulary.
+
+required_output:
+  description: >
+    Return only one or more LaTeX question environments. Do not generate section
+    titles, file names, metadata, shuffle commands, render commands, explanations,
+    or comments.
+  code_block_rules:
+    - The complete answer must be wrapped in exactly one Markdown code block.
+    - The code block language must be "latex".
+    - Do not include any text before or after the code block.
+  allowed_commands:
+    - "\\begin{question}{...}"
+    - "\\choice{...}"
+    - "\\choice[correct]{...}"
+    - "\\end{question}"
+
+question_format:
+  example: |
+    ```latex
+    \begin{question}{Qual curva de disparo (IEC 60898-1) é a mais indicada para a proteção de chuveiros elétricos e cargas resistivas puras?}
+      \choice{Curva A.}
+      \choice[correct]{Curva B.}
+      \choice{Curva C.}
+      \choice{Curva D.}
+      \choice{Curva gG.}
+    \end{question}
+    ```
+
+formatting_rules:
+  - Each question must start with "\begin{question}{...}".
+  - Each question must end with "\end{question}".
+  - Each alternative must use either "\choice{...}" or "\choice[correct]{...}".
+  - Each question must contain exactly one "\choice[correct]{...}".
+  - Prefer five alternatives per question unless the source clearly supports fewer or more.
+  - Keep each command on its own line.
+  - Insert one blank line between consecutive question environments.
+  - Do not insert blank lines inside a question environment.
+  - Do not manually number questions or alternatives.
+  - Do not include "\startSection", "\sectionTitle", "\shuffleSection", or "\renderSection".
+
+content_rules:
+  - Questions must be relevant to the source material.
+  - Prefer questions that assess technical understanding and application, not only memorization.
+  - Write questions as standalone exam questions, assuming the student studied the source material but will not have access to it during the exam.
+  - Do not use source-dependent phrases such as "de acordo com o texto", "segundo o texto", "conforme apresentado", "as stated in the text", "according to the text", or similar wording.
+  - Abstract away references to the source text and ask directly about the concept, procedure, calculation, standard, interpretation, or application being assessed.
+  - The correct alternative must be clear, unambiguous, and defensible from the source.
+  - Distractors must be plausible, mutually exclusive, and technically incorrect.
+  - Keep alternatives in the same question approximately the same length, with a similar word count, so the correct answer is not identifiable by being much shorter or much longer than the distractors.
+  - Preserve any intended correct answer when converting an existing question.
+  - When generating new questions from notes or source material, infer answers only from supported information.
+  - If the source is insufficient, generate fewer questions rather than inventing unsupported facts.
+  - Do not provide answer explanations, rubrics, difficulty labels, metadata, or commentary.
+
+latex_rules:
+  - Use valid UTF-8 LaTeX.
+  - 'Escape LaTeX special characters when needed: "#", "%", "&", "_", "{", "}", "$".'
+  - Use math mode for variables, formulas, units, and numerical expressions.
+  - Use the editorial unit style with square brackets for SI units.
+  - 'When defining or mentioning a physical quantity and its SI unit, prefer this style: "$V_F$ é a diferença de potencial elétrico de fase, em volt $[\mathrm{V}]$" and "$I_F$ é a corrente de fase, em ampere $[\mathrm{A}]$".'
+  - 'For numerical values with SI units, prefer forms such as "$380\,[\mathrm{V}]$", "$10\,[\mathrm{Hz}]$", or "$2{,}5\,[\mathrm{mm}^{2}]$".'
+  - 'Use "\textit{...}" for short foreign technical terms when useful.'
+  - 'Use "\enquote{...}" for quoted terms when useful.'
+
+final_instruction: >
+  Return only one Markdown code block tagged as latex. Inside the code block,
+  include only the LaTeX question environments in the required format, in the
+  same language as the input source.

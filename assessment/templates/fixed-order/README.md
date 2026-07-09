@@ -1,12 +1,12 @@
 # Fixed-order Template
 
-A single-file LaTeX template for generating multiple-choice exams with optional
+A fixed-order LaTeX template for generating multiple-choice exams with optional
 answer-key rendering.
 
-This template follows a fixed-order, monolithic approach: metadata, layout
-commands, section commands, question environments, and sample content all live
-in `main.tex`. It is useful as a compact starter file or as a reference for the
-more modular shuffled template.
+This template follows a fixed-order approach: metadata and layout commands live
+in `main.tex`, while question content lives in separate files under `sections/`.
+It is useful when the assessment should keep the authored question order but use
+the same section-file style as the shuffled template.
 
 ## Features
 
@@ -22,6 +22,10 @@ more modular shuffled template.
 assessment/templates/fixed-order/
   README.md
   main.tex
+  sections/
+    S01.tex
+    S02.tex
+    ...
   figures/
     institution-logomark.png
   output/
@@ -39,8 +43,8 @@ Edit the metadata section at the beginning of `main.tex`:
 \newcommand{\examdate}{Exam Date}
 ```
 
-Add sections and questions with the same authoring shape used by the shuffled
-template:
+Add sections in separate files under `sections/`, using the same authoring shape
+used by the shuffled template:
 
 ```latex
 \startSection
@@ -60,6 +64,13 @@ template:
 In this fixed-order template, questions render immediately in source order.
 `\shuffleSection` is intentionally not defined here; use the shuffled template
 when section-level randomization is required.
+
+Include section files from `main.tex` in the exact order they should appear:
+
+```latex
+\input{sections/S01.tex}
+\input{sections/S02.tex}
+```
 
 Switch between student and teacher versions by changing:
 
