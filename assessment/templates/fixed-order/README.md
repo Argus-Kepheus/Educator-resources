@@ -40,13 +40,21 @@ assessment/templates/fixed-order/
 
 ## Usage
 
-Edit the metadata file:
+Edit `metadata.tex`. The fixed-order and shuffled templates intentionally use
+the same metadata commands:
 
 ```latex
+\newcommand{\institutionName}{Example Technical Institute}
+\newcommand{\institutionLogoFile}{institution-logomark.png}
 \newcommand{\subject}{Your Subject Name}
 \newcommand{\teacher}{Your Name}
 \newcommand{\examdate}{Exam Date}
+\newcommand{\examduration}{2 hours}
 ```
+
+The short commands above are the canonical fields. Compatibility aliases such as
+`\examSubject`, `\examDate`, `\examTime`, and `\instructorName` are also defined
+so both engines can consume the same file shape.
 
 Add sections in separate files under `sections/`, using the same authoring shape
 used by the shuffled template:

@@ -41,6 +41,19 @@ assessment/templates/shuffled/
 
 ## Build
 
+Edit `metadata.tex` before building. The shuffled and fixed-order templates use
+the same metadata commands, with the fixed-order names kept as the canonical
+fields:
+
+```latex
+\newcommand{\institutionName}{Example Technical Institute}
+\newcommand{\institutionLogoFile}{institution-logomark.png}
+\newcommand{\subject}{Your Subject Name}
+\newcommand{\teacher}{Your Name}
+\newcommand{\examdate}{Exam Date}
+\newcommand{\examduration}{2 hours}
+```
+
 From this folder:
 
 ```powershell
@@ -52,7 +65,8 @@ This generates:
 - `student-version.pdf`
 - `teacher-version.pdf`
 
-The PDFs are written to `output/`.
+The PDFs are written to `output/`. The institutional logo is loaded from
+`figures/` using `\institutionLogoFile`.
 
 To build only one output:
 

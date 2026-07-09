@@ -91,7 +91,7 @@ headsep		=	0.5cm   	% separation between header and text
 \hypersetup{
 	colorlinks		=	false,
 	pdfborder		=	{0 0 0},
-	pdftitle		=	{\subject - Exam},
+	pdftitle		=	{\examTitle},
 	pdfsubject		=	{Assessment},
 	pdfkeywords		=	{exam, \subject}
 }
@@ -213,18 +213,19 @@ headsep		=	0.5cm   	% separation between header and text
 	\gradebox
 	\begin{center}
 		\vspace{-1cm}
-		\imagewithfallback[width=0.4\textwidth]{institution-logomark.png}{<institution name>}\\[-0.3em]
+		\imagewithfallback[width=0.4\textwidth]{\institutionLogoFile}{Institution logo}\\[-0.3em]
 		
 		{\scriptsize\color{blue!50!black}
-			<institution address>\\
-			<institution contact info>
+			\textbf{\institutionName}\\
+			\institutionAddress\\
+			\institutionContact
 		} \vspace{1.5em}
 		
 		\adjustbox{valign=c}{%
 			\colorbox{gray!20}{%
 				\parbox[c]{\linewidth}{%
 					\centering%
-						\textbf{\Large \subject}%
+						\textbf{\Large \examTitle}%
 				}%
 			}%
 		}
@@ -232,25 +233,22 @@ headsep		=	0.5cm   	% separation between header and text
 	\end{center}
 	
 	\vspace{0.3em}
-		\textbf{Full name:} \rule{0.4\linewidth}{0.4pt} \hfill
-		\textbf{ID number:} \rule{0.25\linewidth}{0.4pt}
+		\textbf{\studentNameLabel:} \rule{0.4\linewidth}{0.4pt} \hfill
+		\textbf{\studentIdLabel:} \rule{0.25\linewidth}{0.4pt}
 	
 	\vspace{0.5em}
 	{\small
-			\textbf{Date:} \examdate \hfill
-			\textbf{Period:} \period \hfill
-			\textbf{Version:} \examversion \hfill
-			\textbf{Duration:} \examduration \hfill
-			\textbf{Teacher:} \teacher
+			\textbf{\dateLabel:} \examdate \hfill
+			\textbf{\periodLabel:} \period \hfill
+			\textbf{\versionLabel:} \examversion \hfill
+			\textbf{\timeLabel:} \examduration \hfill
+			\textbf{\instructorLabel:} \teacher
 	}
 	
 	\vspace{1em}
-		\textbf{Instructions:}
+		\textbf{\instructionsLabel:}
 	\begin{itemize}[leftmargin=4.0em, itemsep=-0.2em]
-		\item Read questions and answer options carefully before making your choice.
-		\item Mark the correct answer by completely filling the square of the chosen option.
-		\item Each question has only one correct answer. Make sure to mark only one option.
-		\item Use blue or black pen. Do not use pencil or red pen.
+		\examInstructions
 	\end{itemize}
 	
 	\vspace{0.5em}
