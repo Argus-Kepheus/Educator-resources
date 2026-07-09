@@ -23,62 +23,39 @@ function Remove-LatexTemporaryFiles {
 
 function Invoke-LuaLaTeX {
   param(
-    [Parameter(Mandatory = $true)][string]$TexFile,
+    [Parameter(Mandatory = $true)][string]$InputExpression,
     [Parameter(Mandatory = $true)][string]$JobName,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
     [int]$Passes = 2
   )
 
   for ($pass = 1; $pass -le $Passes; $pass++) {
-    & lualatex "-jobname=$JobName" "-output-directory=$OutputDirectory" -interaction=nonstopmode -halt-on-error $TexFile
+    & lualatex "-jobname=$JobName" "-output-directory=$OutputDirectory" -interaction=nonstopmode -halt-on-error $InputExpression
     if ($LASTEXITCODE -ne 0) {
-      throw "LuaLaTeX failed for $TexFile on pass $pass"
+      throw "LuaLaTeX failed for $JobName on pass $pass"
     }
   }
-}
-
-function Get-TexCommandValue {
-  param(
-    [Parameter(Mandatory = $true)][string]$File,
-    [Parameter(Mandatory = $true)][string]$Command
-  )
-
-  if (-not (Test-Path -LiteralPath $File)) {
-    return ''
-  }
-
-  $pattern = "\\(?:newcommand|renewcommand)\{\\$Command\}\{([^}]*)\}"
-  foreach ($line in Get-Content -LiteralPath $File) {
-    if ($line -match $pattern) {
-      return $Matches[1]
-    }
-  }
-  return ''
 }
 
 $targetDir = (Resolve-Path -LiteralPath $Path).Path
 $templateDir = Split-Path -Parent $PSScriptRoot
 $outputDir = Join-Path $templateDir 'output'
 $engineDir = Join-Path $targetDir 'engine'
-$studentVersion = Join-Path $engineDir 'student-version.tex'
-$teacherVersion = Join-Path $engineDir 'teacher-version.tex'
+$mainFile = Join-Path $engineDir 'main.tex'
 
-if (-not (Test-Path -LiteralPath $studentVersion)) {
-  throw "student-version.tex not found in: $engineDir"
-}
-if (-not $StudentOnly -and -not (Test-Path -LiteralPath $teacherVersion)) {
-  throw "teacher-version.tex not found in: $engineDir"
+if (-not (Test-Path -LiteralPath $mainFile)) {
+  throw "main.tex not found in: $engineDir"
 }
 
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
-Push-Location $targetDir
+Push-Location $engineDir
 try {
   if (-not $TeacherOnly) {
-    Invoke-LuaLaTeX -TexFile 'engine/student-version.tex' -JobName 'student-version' -OutputDirectory $outputDir
+    Invoke-LuaLaTeX -InputExpression '\def\FixedOrderShowAnswers{false}\input{main.tex}' -JobName 'student-version' -OutputDirectory $outputDir
   }
   if (-not $StudentOnly) {
-    Invoke-LuaLaTeX -TexFile 'engine/teacher-version.tex' -JobName 'teacher-version' -OutputDirectory $outputDir
+    Invoke-LuaLaTeX -InputExpression '\def\FixedOrderShowAnswers{true}\input{main.tex}' -JobName 'teacher-version' -OutputDirectory $outputDir
   }
 } finally {
   Pop-Location

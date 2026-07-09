@@ -7,8 +7,7 @@ The project is intentionally compact:
 
 - reusable engine files live in `engine/`;
 - reusable template figures live in `figures/`;
-- metadata, version entry points, and example section files live at the template
-  root;
+- metadata and example section files live at the template root;
 - Lua shuffles questions and alternatives;
 - the same content renders a student version or a teacher version.
 
@@ -50,10 +49,10 @@ From this folder:
 
 This generates:
 
-- `<date>-P<number>_student-version.pdf`
-- `<date>-P<number>_teacher-version.pdf`
+- `student-version.pdf`
+- `teacher-version.pdf`
 
-The PDFs are written to `output/`. The date and number come from `metadata.tex`.
+The PDFs are written to `output/`.
 
 To build only one output:
 

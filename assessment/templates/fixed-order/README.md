@@ -22,10 +22,11 @@ the shuffled template.
 ```text
 assessment/templates/fixed-order/
   README.md
-  main.tex
   metadata.tex
   engine/
     main.tex
+  scripts/
+    build.ps1
   sections/
     S01.tex
     S02.tex
@@ -69,22 +70,24 @@ In this fixed-order template, questions render immediately in source order.
 `\shuffleSection` is intentionally not defined here; use the shuffled template
 when section-level randomization is required.
 
-Include section files from `main.tex` in the exact order they should appear:
+Include section files from `engine/main.tex` in the exact order they should
+appear:
 
 ```latex
-\input{sections/S01.tex}
-\input{sections/S02.tex}
+\input{../sections/S01.tex}
+\input{../sections/S02.tex}
 ```
 
-Switch between student and teacher versions by changing:
+From this folder, build both PDFs with:
 
-```latex
-\setboolean{showanswers}{false}
+```powershell
+.\scripts\build.ps1 -Path . -Clean
 ```
 
-Use `false` for the student version and `true` for the teacher version. When
-answers are shown, correct alternatives render with filled squares and incorrect
-alternatives render with empty squares.
+This generates `student-version.pdf` and `teacher-version.pdf` in `output/`.
+The script sets the answer rendering mode automatically. When answers are shown,
+correct alternatives render with filled squares and incorrect alternatives
+render with empty squares.
 
 ## Requirements
 

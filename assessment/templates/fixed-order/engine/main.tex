@@ -1,3 +1,8 @@
+% !TeX program = lualatex
+\documentclass[11pt]{article}
+
+\input{../metadata}
+
 % ======================================================= %
 % PACKAGES 
 % ======================================================= %
@@ -75,7 +80,11 @@ headsep		=	0.5cm   	% separation between header and text
 % ANSWER KEY SETTINGS
 % ======================================================= %
 \newboolean{showanswers}
-\setboolean{showanswers}{true} % true for answer key, false for students
+\ifdefined\FixedOrderShowAnswers
+	\setboolean{showanswers}{\FixedOrderShowAnswers}
+\else
+	\setboolean{showanswers}{true} % true for answer key, false for students
+\fi
 % ======================================================= %
 % HYPERREF SETTINGS
 % ======================================================= %
@@ -90,15 +99,15 @@ headsep		=	0.5cm   	% separation between header and text
 % IMAGE WITH FALLBACK COMMAND
 % ======================================================= %
 \newcommand{\imagewithfallback}[3][]{%
-	\IfFileExists{figures/#2}{%
-		\includegraphics[#1]{figures/#2}%
+	\IfFileExists{../figures/#2}{%
+		\includegraphics[#1]{../figures/#2}%
 	}{%
 		\fbox{%
 			\parbox{0.4\textwidth}{%
 				\centering%
 					\textcolor{red}{\textbf{IMAGE NOT FOUND}}\\[0.5em]%
 					\textcolor{gray}{\footnotesize #3}\\[0.5em]%
-					\textcolor{gray}{\footnotesize File: figures/#2}%
+					\textcolor{gray}{\footnotesize File: ../figures/#2}%
 			}%
 		}%
 	}%
@@ -266,12 +275,12 @@ headsep		=	0.5cm   	% separation between header and text
 	\setlength{\columnsep}{\columnspacing}
 	\setlength{\columnseprule}{0pt}
 	\begin{multicols}{2}
-	\input{sections/S01.tex}
-	\input{sections/S02.tex}
-	\input{sections/S03.tex}
-	\input{sections/S04.tex}
-	\input{sections/S05.tex}
-	\input{sections/S06.tex}
+	\input{../sections/S01.tex}
+	\input{../sections/S02.tex}
+	\input{../sections/S03.tex}
+	\input{../sections/S04.tex}
+	\input{../sections/S05.tex}
+	\input{../sections/S06.tex}
 
 	% English section
 	\selectlanguage{english}
