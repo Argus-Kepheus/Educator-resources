@@ -3,10 +3,11 @@
 A fixed-order LaTeX template for generating multiple-choice exams with optional
 answer-key rendering.
 
-This template follows a fixed-order approach: metadata and layout commands live
-in `main.tex`, while question content lives in separate files under `sections/`.
-It is useful when the assessment should keep the authored question order but use
-the same section-file style as the shuffled template.
+This template follows a fixed-order approach: metadata lives in `metadata.tex`,
+layout and rendering commands live in `engine/main.tex`, and question content
+lives in separate files under `sections/`. It is useful when the assessment
+should keep the authored question order but use the same section-file style as
+the shuffled template.
 
 ## Features
 
@@ -22,6 +23,9 @@ the same section-file style as the shuffled template.
 assessment/templates/fixed-order/
   README.md
   main.tex
+  metadata.tex
+  engine/
+    main.tex
   sections/
     S01.tex
     S02.tex
@@ -35,7 +39,7 @@ assessment/templates/fixed-order/
 
 ## Usage
 
-Edit the metadata section at the beginning of `main.tex`:
+Edit the metadata file:
 
 ```latex
 \newcommand{\subject}{Your Subject Name}

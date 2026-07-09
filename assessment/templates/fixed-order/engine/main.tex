@@ -1,0 +1,282 @@
+% ======================================================= %
+% PACKAGES 
+% ======================================================= %
+% ENCODING AND LANGUAGE PACKAGES
+\usepackage[T1]{fontenc}        % Font encoding
+\usepackage[	portuguese,
+				spanish,
+				french,
+				italian,
+				german,
+				romanian,
+				english]{babel} % Multiple language support
+\usepackage{fontspec}           % Unicode font support for LuaLaTeX
+% MATH PACKAGES
+\usepackage{amsmath}            % Advanced mathematics
+\usepackage{amssymb}            % Mathematical symbols
+% GENERAL PACKAGES
+\usepackage{adjustbox}          % Box adjustment
+\usepackage{csquotes}           % Contextual quotes
+\usepackage{enumitem}           % Customized lists
+\usepackage[
+top			=	1.5cm,
+bottom		=	1.5cm,
+left		=	1cm,
+right		=	1cm,
+headheight	=	2cm,  		% header space
+headsep		=	0.5cm   	% separation between header and text
+]{geometry}
+\usepackage{graphicx}           % Image inclusion
+\usepackage{ifthen}             % Conditional structures
+\usepackage{microtype}          % Typography improvement
+\usepackage{multicol}           % Multiple columns
+\usepackage{ragged2e}           % Text alignment
+\usepackage{tikz}               % Graphics and drawings
+\usepackage{titlesec}           % Title formatting
+\usepackage{xcolor}             % Colors
+% LAYOUT PACKAGES
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+% HYPERLINK PACKAGE (should come last)
+\usepackage{hyperref}           % Links and references
+% ======================================================= %
+% GRADE BOX COMMAND
+% ======================================================= %
+\newcommand{\gradebox}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[anchor=north east, xshift=-1.0cm, yshift=-1.0cm] at (current page.north east) {%
+			\fbox{\parbox[c][2cm][c]{2cm}{\phantom{.}}}%
+		};
+	\end{tikzpicture}%
+}
+% ======================================================= %
+% HEADER AND FOOTER CONFIGURATION
+% ======================================================= %
+\pagestyle{fancy}
+\fancyhf{} % Clear all headers and footers
+% Header configuration
+\fancyhead[L]{\leftmark} % Section name on the left side
+\fancyhead[R]{} % Right side empty (or can add other info)
+% Footer configuration
+\fancyfoot[C]{\thepage\ of \pageref{LastPage}} % Current page of total in center
+% Line configuration
+\renewcommand{\headrulewidth}{0.4pt} % Header line
+\renewcommand{\footrulewidth}{0.4pt} % Footer line
+% ======================================================= %
+% TYPOGRAPHY SETTINGS
+% ======================================================= %
+\tolerance=1000
+\hyphenpenalty=1000
+\emergencystretch=\maxdimen
+% Hyphenation settings
+\lefthyphenmin=2
+\righthyphenmin=3
+% ======================================================= %
+% ANSWER KEY SETTINGS
+% ======================================================= %
+\newboolean{showanswers}
+\setboolean{showanswers}{true} % true for answer key, false for students
+% ======================================================= %
+% HYPERREF SETTINGS
+% ======================================================= %
+\hypersetup{
+	colorlinks		=	false,
+	pdfborder		=	{0 0 0},
+	pdftitle		=	{\subject - Exam},
+	pdfsubject		=	{Assessment},
+	pdfkeywords		=	{exam, \subject}
+}
+% ======================================================= %
+% IMAGE WITH FALLBACK COMMAND
+% ======================================================= %
+\newcommand{\imagewithfallback}[3][]{%
+	\IfFileExists{figures/#2}{%
+		\includegraphics[#1]{figures/#2}%
+	}{%
+		\fbox{%
+			\parbox{0.4\textwidth}{%
+				\centering%
+					\textcolor{red}{\textbf{IMAGE NOT FOUND}}\\[0.5em]%
+					\textcolor{gray}{\footnotesize #3}\\[0.5em]%
+					\textcolor{gray}{\footnotesize File: figures/#2}%
+			}%
+		}%
+	}%
+}
+% ======================================================= %
+% LAYOUT SETTINGS
+% ======================================================= %
+\newlength{\columnspacing}
+\setlength{\columnspacing}{0.8cm}
+\newcommand{\questionfontsize}{\normalsize}
+\newlength{\alternativespacing}
+\setlength{\alternativespacing}{0.5em}
+\newlength{\questionspacing}
+\setlength{\questionspacing}{-0.5em}
+\newlength{\questiontoalternativespacing}
+\setlength{\questiontoalternativespacing}{0.5em}
+% ======================================================= %
+% CHOICE COMMANDS
+% ======================================================= %
+\newcommand{\renderchoice}[2]{%
+	\vspace{\questiontoalternativespacing}%
+	\noindent%
+	\ifthenelse{\boolean{showanswers}}{%
+		\ifthenelse{\equal{#2}{correct}}{%
+			\ensuremath{\blacksquare}% correct choice
+		}{%
+			\ensuremath{\square}% incorrect alternative
+		}%
+	}{%
+	\ensuremath{\square}% student version
+	}%
+	\hspace{0.3em}%
+	\begin{minipage}[t]{0.88\linewidth}
+		\raggedright #1
+	\end{minipage}\\[\alternativespacing]
+	\setlength{\questiontoalternativespacing}{0pt}%
+}
+% ======================================================= %
+% QUESTION COUNTER AND COMMANDS
+% ======================================================= %
+% Counter for automatic question numbering
+\newcounter{questioncounter}
+\setcounter{questioncounter}{0}
+% Main environment for questions with automatic numbering.
+\newenvironment{question}[1]{%
+	\setlength{\questiontoalternativespacing}{0.5em}% Restore spacing
+	\stepcounter{questioncounter}% Increment counter
+	\vspace{\questionspacing}% Spacing before question
+	\noindent% Remove indentation
+		\textbf{\questionfontsize Question \thequestioncounter:} #1%
+	\par%
+	\setlength{\parindent}{0pt}% Remove paragraph indentation
+}{%
+	\par%
+}
+% Optional command to reset counter (useful between sections)
+\newcommand{\resetquestions}{\setcounter{questioncounter}{0}}
+% Optional command to set a specific number for the next question
+\newcommand{\setquestion}[1]{\setcounter{questioncounter}{#1}\addtocounter{questioncounter}{-1}}
+
+\newcommand{\choice}[2][]{%
+	\ifthenelse{\equal{#1}{correct}}{%
+		\renderchoice{#2}{correct}%
+	}{%
+		\renderchoice{#2}{}%
+	}%
+}
+
+% ======================================================= %
+% SECTIONS
+% ======================================================= %
+\newcommand{\sectiontitle}[1]{%
+	\phantomsection%
+	\addcontentsline{toc}{section}{#1}%
+	\markboth{#1}{#1}% Sets the section header
+	\noindent
+	\adjustbox{valign=c,width=\linewidth}{%
+		\colorbox{gray!20}{%
+			\parbox{\linewidth}{%
+				\centering%
+				\large\bfseries #1%
+			}%
+		}%
+	}%
+	\par
+	\vspace{1em}%
+}
+
+% Section hooks shared with modular section files. In this fixed-order template,
+% content is rendered immediately and no shuffle command is provided.
+\newcommand{\startSection}{}
+\newcommand{\sectionTitle}[1]{\sectiontitle{#1}}
+\newcommand{\renderSection}{}
+
+% ======================================================= %
+% COLUMN BREAK COMMAND
+% ======================================================= %
+\newcommand{\breakcolumnhere}{\vfill\columnbreak}
+% ======================================================= %
+% STANDARDIZED HEADER
+% ======================================================= %
+\newcommand{\examheader}{%
+	\gradebox
+	\begin{center}
+		\vspace{-1cm}
+		\imagewithfallback[width=0.4\textwidth]{institution-logomark.png}{<institution name>}\\[-0.3em]
+		
+		{\scriptsize\color{blue!50!black}
+			<institution address>\\
+			<institution contact info>
+		} \vspace{1.5em}
+		
+		\adjustbox{valign=c}{%
+			\colorbox{gray!20}{%
+				\parbox[c]{\linewidth}{%
+					\centering%
+						\textbf{\Large \subject}%
+				}%
+			}%
+		}
+		\vspace{-1.0em}
+	\end{center}
+	
+	\vspace{0.3em}
+		\textbf{Full name:} \rule{0.4\linewidth}{0.4pt} \hfill
+		\textbf{ID number:} \rule{0.25\linewidth}{0.4pt}
+	
+	\vspace{0.5em}
+	{\small
+			\textbf{Date:} \examdate \hfill
+			\textbf{Period:} \period \hfill
+			\textbf{Version:} \examversion \hfill
+			\textbf{Duration:} \examduration \hfill
+			\textbf{Teacher:} \teacher
+	}
+	
+	\vspace{1em}
+		\textbf{Instructions:}
+	\begin{itemize}[leftmargin=4.0em, itemsep=-0.2em]
+		\item Read questions and answer options carefully before making your choice.
+		\item Mark the correct answer by completely filling the square of the chosen option.
+		\item Each question has only one correct answer. Make sure to mark only one option.
+		\item Use blue or black pen. Do not use pencil or red pen.
+	\end{itemize}
+	
+	\vspace{0.5em}
+	\hrule
+	\vspace{0.5em}
+		\thispagestyle{firstpage}%
+}
+% ======================================================= %
+% SPECIAL CONFIGURATION FOR FIRST PAGE
+% ======================================================= %
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\fancyfoot[C]{\thepage\ of \pageref{LastPage}}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0.4pt}%
+}
+% ======================================================= %
+\begin{document}
+		\thispagestyle{firstpage}
+	\examheader
+	
+	\setlength{\columnsep}{\columnspacing}
+	\setlength{\columnseprule}{0pt}
+	\begin{multicols}{2}
+	\input{sections/S01.tex}
+	\input{sections/S02.tex}
+	\input{sections/S03.tex}
+	\input{sections/S04.tex}
+	\input{sections/S05.tex}
+	\input{sections/S06.tex}
+
+	% English section
+	\selectlanguage{english}
+	\sectionTitle{End}
+
+
+	\end{multicols}	
+\end{document}

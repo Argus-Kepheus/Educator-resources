@@ -59,15 +59,16 @@ function Get-TexCommandValue {
 $targetDir = (Resolve-Path -LiteralPath $Path).Path
 $templateDir = Split-Path -Parent $PSScriptRoot
 $outputDir = Join-Path $templateDir 'output'
-$studentVersion = Join-Path $targetDir 'student-version.tex'
-$teacherVersion = Join-Path $targetDir 'teacher-version.tex'
+$engineDir = Join-Path $targetDir 'engine'
+$studentVersion = Join-Path $engineDir 'student-version.tex'
+$teacherVersion = Join-Path $engineDir 'teacher-version.tex'
 $metadata = Join-Path $targetDir 'metadata.tex'
 
 if (-not (Test-Path -LiteralPath $studentVersion)) {
-  throw "student-version.tex not found in: $targetDir"
+  throw "student-version.tex not found in: $engineDir"
 }
 if (-not $StudentOnly -and -not (Test-Path -LiteralPath $teacherVersion)) {
-  throw "teacher-version.tex not found in: $targetDir"
+  throw "teacher-version.tex not found in: $engineDir"
 }
 
 $examDate = Get-TexCommandValue -File $metadata -Command 'examDate'
@@ -87,10 +88,10 @@ New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 Push-Location $targetDir
 try {
   if (-not $TeacherOnly) {
-    Invoke-LuaLaTeX -TexFile 'student-version.tex' -JobName "${jobPrefix}_student-version" -OutputDirectory $outputDir
+    Invoke-LuaLaTeX -TexFile 'engine/student-version.tex' -JobName "${jobPrefix}_student-version" -OutputDirectory $outputDir
   }
   if (-not $StudentOnly) {
-    Invoke-LuaLaTeX -TexFile 'teacher-version.tex' -JobName "${jobPrefix}_teacher-version" -OutputDirectory $outputDir
+    Invoke-LuaLaTeX -TexFile 'engine/teacher-version.tex' -JobName "${jobPrefix}_teacher-version" -OutputDirectory $outputDir
   }
 } finally {
   Pop-Location

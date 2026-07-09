@@ -20,14 +20,14 @@ assessment/templates/shuffled/
   engine/
     exam.tex
     shuffling.lua
+    student-version.tex
+    teacher-version.tex
   figures/
     institution-logomark.png
   output/
   scripts/
     build.ps1
   metadata.tex
-  student-version.tex
-  teacher-version.tex
   sections/
     S01.tex
     S02.tex

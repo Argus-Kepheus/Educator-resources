@@ -1,30 +1,53 @@
 \startSection
-\sectionTitle{Shuffling and Rendering}
+\selectlanguage{spanish}
+\sectionTitle{Himno Nacional de Bolivia}
 
-\begin{question}{What is shuffled by the Lua helper during assessment generation?}
-  \choice{Only the page headers are shuffled after the PDF is finalized.}
-  \choice{Only the metadata fields are shuffled before the sections load.}
-  \choice[correct]{The order of questions and the order of alternatives can be shuffled.}
-  \choice{Only section file names are shuffled before the build script runs.}
-  \choice{Only the output file names are shuffled after compilation finishes.}
+\begin{question}{En la historia musical boliviana, ¿quién compuso la música del Himno Nacional de Bolivia?}
+  \choice{José Ignacio de Sanjinés}
+  \choice{Eduardo Abaroa}
+  \choice[correct]{Leopoldo Benedetto Vincenti}
+  \choice{Franz Tamayo}
+  \choice{Modesto Omiste}
 \end{question}
 
-\begin{question}{Why does the project render both a test and an answer key from the same question files?}
-  \choice{It guarantees that the answer key uses unrelated questions for security.}
-  \choice{It avoids maintaining two separate copies of the same question content.}
-  \choice{It makes the test ignore all alternatives marked with \texttt{correct}.}
-  \choice{It prevents the build script from compiling more than one PDF file.}
-  \choice{It requires the instructor to manually reorder every alternative.}
+\begin{question}{La letra del Himno Nacional de Bolivia expresa el espíritu patriótico de la etapa republicana. ¿Quién fue su autor?}
+  \choice{Ricardo José Bustamante}
+  \choice{Franz Tamayo}
+  \choice{Adela Zamudio}
+  \choice{Manuel José Cortés}
+  \choice[correct]{José Ignacio de Sanjinés}
 \end{question}
 
-\begin{question}{How is the correct alternative represented inside the source question file?}
-  \choice{It is written first and detected by its position in the source file.}
-  \choice{It is written last and detected after the alternatives are shuffled.}
-  \choice{It is marked by using the command \texttt{\textbackslash choice\{...\}}.}
-  \choice[correct]{It is marked by using the command \texttt{\textbackslash choice[correct]\{...\}}.}
-  \choice{It is marked by writing the answer in uppercase letters only.}
+\begin{question}{¿En qué año fue estrenado oficialmente el Himno Nacional de Bolivia, en el marco de una celebración cívica?}
+  \choice{1825}
+  \choice{1842}
+  \choice[correct]{1845}
+  \choice{1851}
+  \choice{1879}
 \end{question}
 
+\begin{question}{¿Cuál es el primer verso del Himno Nacional de Bolivia?}
+  \choice{\enquote{De la Patria, el alto nombre}}
+  \choice{\enquote{Compatriotas, la Patria muriendo}}
+  \choice[correct]{\enquote{Bolivianos, el hado propicio}}
+  \choice{\enquote{Gloria a Bolivia, tierra bendita}}
+  \choice{\enquote{Surge ya la nueva aurora}}
+\end{question}
+
+\begin{question}{Además del coro, ¿cuántas estrofas contiene oficialmente el Himno Nacional de Bolivia?}
+  \choice{Tres estrofas}
+  \choice{Cuatro estrofas}
+  \choice{Cinco estrofas}
+  \choice{Seis estrofas}
+  \choice[correct]{Nueve estrofas}
+\end{question}
+
+\begin{question}{En el himno, la oposición entre servidumbre y libertad cumple principalmente qué función retórica?}
+  \choice{Describir un paisaje geográfico.}
+  \choice{Narrar una anécdota personal del compositor.}
+  \choice[correct]{Contrastar el pasado colonial con la afirmación republicana.}
+  \choice{Enumerar las regiones administrativas del país.}
+  \choice{Explicar una regla musical de interpretación coral.}
+\end{question}
 \shuffleSection
 \renderSection
-
