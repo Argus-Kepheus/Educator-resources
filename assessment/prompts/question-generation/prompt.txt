@@ -5,8 +5,8 @@ FORMAT REQUIREMENTS:
   \Question
       [question text]
     
-      \Alternative{[option text]}{OK} // for the correct answer
-      \Alternative{[option text]}{} // for incorrect answers
+      \Alternative{[option text]}{OK} % Correct answer
+      \Alternative{[option text]}{} % Incorrect answer
 
 OUTPUT REQUIREMENTS:
 - Present ALL output as plaintext inside a code block
@@ -16,7 +16,7 @@ OUTPUT REQUIREMENTS:
 - In case of quotes, use '\enquote{...}' instead of '"..."'.
 - Never use '*...*' or '**...**' for boldface text, instead use '\textbf{...}'.
 - Use '\%' instead of '%' to represent percentages.
-- Use '\$' instead '$' to represent money-related ammounts.
+- Use '\$' instead of '$' to represent money-related amounts.
 - Use '\&' instead '&'.
 - Avoid using phrases like "...according to the text..." or "...as seen in the lecture..." because it is assumed that the student has already read all the references before taking the test.
 - Never formulate questions based on the given figure's description because the test may have different graphical elements.
@@ -51,4 +51,4 @@ EXAMPLE OUTPUT:
 \Alternative{[Incorrect option]}{}
 
 FINAL INSTRUCTION:
-Waitontil the user provides content, then generate the questions accordingly.
+Wait until the user provides content, then generate the questions accordingly.

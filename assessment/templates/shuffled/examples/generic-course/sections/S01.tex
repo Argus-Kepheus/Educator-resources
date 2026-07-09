@@ -1,0 +1,29 @@
+\startSection
+\sectionTitle{Project Organization}
+
+\begin{question}{What is the main benefit of keeping shared templates outside the exam-specific folder?}
+  \choice{It forces every assessment to duplicate the same formatting files.}
+  \choice[correct]{It allows one template update to affect every compatible assessment.}
+  \choice{It prevents questions from being separated into smaller sections.}
+  \choice{It removes the need to define metadata for each assessment.}
+  \choice{It makes the generated PDF independent of the LaTeX engine.}
+\end{question}
+
+\begin{question}{Why can question sections be stored as separate files such as \texttt{S01.tex} and \texttt{S02.tex}?}
+  \choice{Separate files prevent LaTeX from rendering multiple-choice options.}
+  \choice{Separate files allow only one question to appear in each document.}
+  \choice[correct]{Separate files make the question bank easier to edit and review.}
+  \choice{Separate files disable the answer-key rendering mode by default.}
+  \choice{Separate files require every question to use a different template.}
+\end{question}
+
+\begin{question}{What role does the exam metadata file play in this project structure?}
+  \choice{It stores the Lua algorithm that performs the random shuffling step.}
+  \choice{It contains the generated PDF pages after compilation is complete.}
+  \choice{It replaces every question section before rendering the final document.}
+  \choice[correct]{It defines variable values such as title, date, period, and labels.}
+  \choice{It converts the answer key into a plain text summary automatically.}
+\end{question}
+
+\shuffleSection
+\renderSection

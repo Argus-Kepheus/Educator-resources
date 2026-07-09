@@ -1,4 +1,4 @@
-# Ignora arquivos temporários de LaTeX
+# Ignore temporary LaTeX files.
 *.aux
 *.bbl
 *.blg

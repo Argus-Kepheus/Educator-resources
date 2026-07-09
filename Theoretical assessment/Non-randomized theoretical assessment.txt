@@ -1,6 +1,0 @@
-TeXstudio:
-- Configurar:
-	- Compilar:
-		- Compilar & Visualizar: txs:///lualatex | txs:///biber | txs:///lualatex | txs:///lualatex | txs:///view-pdf
-		- Compilador padrão: txs:///lualatex
-		- 

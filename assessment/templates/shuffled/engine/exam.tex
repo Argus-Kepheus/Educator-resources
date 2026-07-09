@@ -1,0 +1,331 @@
+% Shared exam engine.
+% Load this file after defining institution and discipline metadata.
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{adjustbox}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage[
+  top=1.5cm,
+  bottom=1.5cm,
+  left=1cm,
+  right=1cm,
+  headheight=2cm,
+  headsep=0.5cm
+]{geometry}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{ragged2e}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{siunitx}
+\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{luacode}
+
+\providecommand{\institutionName}{Institution Name}
+\providecommand{\institutionAddress}{}
+\providecommand{\institutionContact}{}
+\providecommand{\institutionLogoFile}{}
+\providecommand{\examSubject}{Exam}
+\providecommand{\examNumber}{1}
+\providecommand{\examLabel}{Prova}
+\providecommand{\examTitle}{\examSubject{} --- \examLabel{} \examNumber{}}
+\providecommand{\professor}{Calvimontes S. C.}
+\providecommand{\instructorName}{\professor}
+\providecommand{\examDate}{}
+\providecommand{\period}{}
+\providecommand{\examVersion}{A}
+\providecommand{\examTime}{2 horas}
+\providecommand{\sectionLabel}{Seção}
+\providecommand{\questionLabel}{Pergunta}
+\providecommand{\studentNameLabel}{Nome completo}
+\providecommand{\studentIdLabel}{Matrícula}
+\providecommand{\dateLabel}{Data}
+\providecommand{\periodLabel}{Período}
+\providecommand{\versionLabel}{Versão}
+\providecommand{\timeLabel}{Tempo}
+\providecommand{\instructorLabel}{Professor}
+\providecommand{\instructionsLabel}{Instruções}
+\providecommand{\examInstructions}{%
+  \item Leia atentamente as perguntas e opções de resposta antes de fazer sua escolha.
+  \item Marque a resposta correta preenchendo completamente o quadrado da opção escolhida.
+  \item Cada pergunta possui apenas uma resposta correta. Certifique-se de marcar apenas uma opção.
+  \item Use caneta azul ou preta. Não use lápis ou caneta vermelha.
+}
+\providecommand{\examSectionList}{auto}
+\providecommand{\ExamTemplatePath}{../../engine}
+\providecommand{\ExamFigurePath}{\ExamTemplatePath/../figures}
+\providecommand{\testChoiceMarker}{\ensuremath{\square}}
+\providecommand{\answerKeyChoiceMarker}{\ensuremath{\blacksquare}}
+\providecommand{\answerKeyChoiceStyle}{}
+
+\graphicspath{{figures/}{Figures/}{\ExamFigurePath/}}
+
+\newboolean{showAnswers}
+\setboolean{showAnswers}{false}
+
+\tolerance=1000
+\hyphenpenalty=1000
+\hbadness=10001
+\vbadness=10001
+\emergencystretch=\maxdimen
+\lefthyphenmin=2
+\righthyphenmin=3
+
+\newcounter{sectionCounter}
+\setcounter{sectionCounter}{0}
+\newcounter{boxIndex}
+\setcounter{boxIndex}{0}
+
+\directlua{dofile("\luaescapestring{\ExamTemplatePath/shuffling.lua}")}
+
+\newcommand{\setSeed}[1]{\directlua{setSeed(#1)}}
+\newcommand{\resetCounter}{\directlua{resetGlobalCounter()}}
+\newcommand{\resetSectionCounter}{\directlua{resetSectionCounter()}}
+\newcommand{\startSection}{\directlua{startQuestionSection()}}
+\newcommand{\saveToSlot}[1]{%
+  \stepcounter{boxIndex}%
+  \expandafter\xdef\csname examcontent@\theboxIndex\endcsname{\unexpanded{#1}}%
+}
+\newcommand{\useSlot}[1]{\csname examcontent@#1\endcsname}
+
+\newenvironment{question}[1]{%
+  \saveToSlot{#1}%
+  \directlua{startQuestion(\theboxIndex)}%
+}{%
+  \directlua{finalizeQuestion()}%
+}
+
+\newcommand{\choice}[2][]{%
+  \saveToSlot{#2}%
+  \ifstrequal{#1}{correct}{%
+    \directlua{addAlternative(\theboxIndex, true)}%
+  }{%
+    \directlua{addAlternative(\theboxIndex, false)}%
+  }%
+}
+
+\newcommand{\shuffleSection}{\directlua{shuffleQuestions(); shuffleAlternatives()}}
+
+\newcommand{\renderSectionAsTest}{\directlua{renderQuestions(false, "\luaescapestring{\questionLabel}")}}
+\newcommand{\renderSectionAsAnswerKey}{\directlua{renderQuestions(true, "\luaescapestring{\questionLabel}")}}
+\newcommand{\renderSection}{\renderSectionAsTest}
+
+\hypersetup{
+  colorlinks=false,
+  pdfborder={0 0 0},
+  pageanchor=false,
+  pdftitle={\examTitle},
+  pdfsubject={Assessment},
+  pdfkeywords={exam, \examSubject}
+}
+
+\newcommand{\examPageTotal}{\pageref{LastPage-\examVersion}}
+
+\newcommand{\imageWithFallback}[3][]{%
+  \IfFileExists{#2}{%
+    \includegraphics[#1]{#2}%
+  }{%
+    \fbox{%
+      \parbox{0.4\textwidth}{%
+        \centering%
+        \textcolor{red}{\textbf{FIGURE NOT FOUND}}\\[0.5em]%
+        \textcolor{gray}{\footnotesize #3}\\[0.5em]%
+        \textcolor{gray}{\footnotesize File: #2}%
+      }%
+    }%
+  }%
+}
+
+\newlength{\columnSpacing}
+\setlength{\columnSpacing}{0.8cm}
+\newcommand{\questionFontSize}{\normalsize}
+\newlength{\choiceSpacing}
+\setlength{\choiceSpacing}{0.2em}
+\newlength{\questionSpacing}
+\setlength{\questionSpacing}{0.1em}
+\newlength{\questionChoiceSpacing}
+\setlength{\questionChoiceSpacing}{0.3em}
+
+\newcommand{\sectionTitle}[1]{%
+  \stepcounter{sectionCounter}%
+  \phantomsection%
+  \addcontentsline{toc}{section}{\sectionLabel\ \arabic{sectionCounter}: #1}%
+  \markboth{\sectionLabel\ \arabic{sectionCounter}: #1}{\sectionLabel\ \arabic{sectionCounter}: #1}%
+  \noindent
+  \adjustbox{valign=c,width=\linewidth}{%
+    \colorbox{gray!20}{%
+      \parbox{\linewidth}{%
+        \centering%
+        \large\bfseries \sectionLabel\ \arabic{sectionCounter}: #1%
+      }%
+    }%
+  }%
+  \par
+  \vspace{1em}%
+}
+
+\newcommand{\columnBreakHere}{\vfill\columnbreak}
+
+\newcommand{\gradeBox}{%
+  \makebox[0pt][l]{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[anchor=north east, xshift=-1.0cm, yshift=-1.0cm] at (current page.north east) {%
+        \fbox{\parbox[c][2cm][c]{2cm}{\phantom{.}}}%
+      };
+    \end{tikzpicture}%
+  }%
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{}
+\fancyfoot[C]{\thepage\ of \examPageTotal}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancypagestyle{firstpage}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\thepage\ of \examPageTotal}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0.4pt}%
+}
+
+\newcommand{\examHeader}{%
+  \gradeBox%
+  \noindent\begin{minipage}{\linewidth}
+    \centering
+    \vspace{-1cm}
+    \ifdefempty{\institutionLogoFile}{}{%
+      \imageWithFallback[width=0.4\textwidth]{\institutionLogoFile}{Institution logo}\\[-0.3em]%
+    }
+
+    {\scriptsize\color{blue!50!black}
+    \textbf{\institutionName}%
+    \ifdefempty{\institutionAddress}{}{\\\institutionAddress}%
+    \ifdefempty{\institutionContact}{}{\\\institutionContact}%
+    } \vspace{1.5em}
+  \end{minipage}
+
+  \noindent\colorbox{gray!20}{%
+    \parbox[c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \centering%
+      \textbf{\Large \examTitle}%
+    }%
+  }%
+  \vspace{0.3em}
+
+  \noindent
+  \textbf{\studentNameLabel:} \rule{0.4\linewidth}{0.4pt} \hfill
+  \textbf{\studentIdLabel:} \rule{0.25\linewidth}{0.4pt}
+
+  \vspace{0.5em}
+  \noindent{\small
+  \textbf{\dateLabel:} \examDate \hfill
+  \textbf{\periodLabel:} \period \hfill
+  \textbf{\versionLabel:} \examVersion \hfill
+  \textbf{\timeLabel:} \examTime \hfill
+  \textbf{\instructorLabel:} \instructorName
+  }
+
+  \vspace{1em}
+  \noindent
+  \textbf{\instructionsLabel:}
+  \begin{itemize}[leftmargin=4.0em, itemsep=-0.2em]
+    \examInstructions
+  \end{itemize}
+
+  \vspace{0.5em}
+  \noindent
+  \hrule
+  \vspace{0.5em}
+  \thispagestyle{firstpage}%
+}
+
+\newcommand{\inputExamSection}[1]{\input{sections/#1}}
+\newcommand{\inputExamSectionsAuto}{%
+  \directlua{
+    local ok, lfs = pcall(require, "lfs")
+    if not ok then
+      tex.error("LuaFileSystem is not available", {"Set examSectionList manually, for example: S01,S02,S03."})
+      return
+    end
+    local sections = {}
+    for name in lfs.dir("sections") do
+      if string.match(name, "^S[0-9][0-9]*[.]tex$") then
+        table.insert(sections, name)
+      end
+    end
+    table.sort(sections)
+    if next(sections) == nil then
+      tex.error("No exam sections found", {"Expected files such as sections/S01.tex."})
+      return
+    end
+    for _, name in ipairs(sections) do
+      local stem = string.sub(name, 1, -5)
+      tex.print("\\input{sections/" .. stem .. "}")
+    end
+  }%
+}
+\newcommand{\renderExamSections}{%
+  \expandafter\forcsvlist\expandafter\inputExamSection\expandafter{\examSectionList}%
+}
+\newcommand{\renderExamContent}{%
+  \ifthenelse{\equal{\examSectionList}{}}{%
+    \inputExamSectionsAuto%
+  }{%
+    \ifthenelse{\equal{\examSectionList}{auto}}{%
+      \inputExamSectionsAuto%
+    }{%
+      \renderExamSections%
+    }%
+  }%
+}
+
+\newcommand{\generateVersion}[2]{%
+  \renewcommand{\examVersion}{#1}%
+  \setboolean{showAnswers}{false}%
+  \renewcommand{\renderSection}{\renderSectionAsTest}%
+  \setSeed{#2}%
+  \resetCounter%
+  \resetSectionCounter%
+  \setcounter{page}{1}%
+  \examHeader%
+  \setlength{\columnsep}{\columnSpacing}%
+  \setlength{\columnseprule}{0pt}%
+  \begin{multicols}{2}%
+    \renderExamContent%
+  \end{multicols}%
+  \phantomsection\label{LastPage-#1}%
+  \clearpage%
+}
+
+\newcommand{\generateAnswerKey}[2]{%
+  \renewcommand{\examVersion}{#1}%
+  \setboolean{showAnswers}{true}%
+  \renewcommand{\renderSection}{\renderSectionAsAnswerKey}%
+  \setSeed{#2}%
+  \resetCounter%
+  \resetSectionCounter%
+  \setcounter{page}{1}%
+  \examHeader%
+  \setlength{\columnsep}{\columnSpacing}%
+  \setlength{\columnseprule}{0pt}%
+  \begin{multicols}{2}%
+    \renderExamContent%
+  \end{multicols}%
+  \phantomsection\label{LastPage-#1}%
+  \setboolean{showAnswers}{false}%
+  \clearpage%
+}

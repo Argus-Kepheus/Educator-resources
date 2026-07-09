@@ -1,0 +1,30 @@
+\startSection
+\sectionTitle{Shuffling and Rendering}
+
+\begin{question}{What is shuffled by the Lua helper during assessment generation?}
+  \choice{Only the page headers are shuffled after the PDF is finalized.}
+  \choice{Only the metadata fields are shuffled before the sections load.}
+  \choice[correct]{The order of questions and the order of alternatives can be shuffled.}
+  \choice{Only section file names are shuffled before the build script runs.}
+  \choice{Only the output file names are shuffled after compilation finishes.}
+\end{question}
+
+\begin{question}{Why does the project render both a test and an answer key from the same question files?}
+  \choice{It guarantees that the answer key uses unrelated questions for security.}
+  \choice{It avoids maintaining two separate copies of the same question content.}
+  \choice{It makes the test ignore all alternatives marked with \texttt{correct}.}
+  \choice{It prevents the build script from compiling more than one PDF file.}
+  \choice{It requires the instructor to manually reorder every alternative.}
+\end{question}
+
+\begin{question}{How is the correct alternative represented inside the source question file?}
+  \choice{It is written first and detected by its position in the source file.}
+  \choice{It is written last and detected after the alternatives are shuffled.}
+  \choice{It is marked by using the command \texttt{\textbackslash choice\{...\}}.}
+  \choice[correct]{It is marked by using the command \texttt{\textbackslash choice[correct]\{...\}}.}
+  \choice{It is marked by writing the answer in uppercase letters only.}
+\end{question}
+
+\shuffleSection
+\renderSection
+
